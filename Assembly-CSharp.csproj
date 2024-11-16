@@ -40,20 +40,20 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.6f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\ActionStatus.cs" />
-     <Compile Include="Assets\Scripts\PhaseManager.cs" />
-     <Compile Include="Assets\Scripts\TileBehaviour.cs" />
-     <Compile Include="Assets\Scripts\UpdateValidMoves.cs" />
-     <Compile Include="Assets\Scripts\DialogueManager.cs" />
-     <Compile Include="Assets\Scripts\SpaceStationMovement.cs" />
-     <Compile Include="Assets\Scripts\MoveEnemy.cs" />
-     <Compile Include="Assets\Scripts\TileSpawn.cs" />
-     <Compile Include="Assets\Scripts\CameraMove.cs" />
-     <Compile Include="Assets\Scripts\StationStateManager.cs" />
-     <Compile Include="Assets\Scripts\MoveCharacter.cs" />
-     <Compile Include="Assets\Scripts\SpaceStationInteractable.cs" />
-     <Compile Include="Assets\Scripts\CharacterAttack.cs" />
-     <Compile Include="Assets\Scripts\DialogueDatabase.cs" />
+     <Compile Include="Assets\Scripts\Station\SpaceStationInteractable.cs" />
+     <Compile Include="Assets\Scripts\Station\SpaceStationMovement.cs" />
+     <Compile Include="Assets\Scripts\Battle\CameraMove.cs" />
+     <Compile Include="Assets\Scripts\Battle\TileBehaviour.cs" />
+     <Compile Include="Assets\Scripts\Battle\UpdateValidMoves.cs" />
+     <Compile Include="Assets\Scripts\Battle\ActionStatus.cs" />
+     <Compile Include="Assets\Scripts\Battle\CharacterAttack.cs" />
+     <Compile Include="Assets\Scripts\Battle\MoveEnemy.cs" />
+     <Compile Include="Assets\Scripts\Battle\MoveCharacter.cs" />
+     <Compile Include="Assets\Scripts\Station\DialogueDatabase.cs" />
+     <Compile Include="Assets\Scripts\Station\StationStateManager.cs" />
+     <Compile Include="Assets\Scripts\Battle\TileSpawn.cs" />
+     <Compile Include="Assets\Scripts\Battle\PhaseManager.cs" />
+     <Compile Include="Assets\Scripts\Station\DialogueManager.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />

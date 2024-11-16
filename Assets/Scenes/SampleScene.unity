@@ -1149,7 +1149,7 @@ PrefabInstance:
       objectReference: {fileID: 2114989596}
     - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: movementDistance
-      value: 16
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7550303750005811417, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: m_LocalScale.y
