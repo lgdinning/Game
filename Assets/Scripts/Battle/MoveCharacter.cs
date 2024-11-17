@@ -4,23 +4,30 @@ using UnityEngine;
 
 public class MoveCharacter : MonoBehaviour
 {
+    public bool isMC;
     public Material plains;
     public Material water;
     public Material wall;
     public Material attackable;
     public Material available;
     public Material unmoved;
+    public Material selected;
     public List<List<GameObject>> map;
     public List<GameObject> validTiles;
+    public List<GameObject> hashSet;
+    public List<List<int>> validPath;
     public GameObject playerStatus;
     public bool status = true;
     public Dictionary<int,int> traversalGraph;
     public bool hasMoved;
+    public bool isMoving;
     public int movementDistance;
+    public GameObject phaseManager;
 
     // Start is called before the first frame update
     void Start()
     {
+        validPath = new List<List<int>>();
         hasMoved = false;
         traversalGraph = new Dictionary<int, int>();
         validTiles = new List<GameObject>();
@@ -32,9 +39,13 @@ public class MoveCharacter : MonoBehaviour
         
     }
 
+    public void SetMC() {
+        isMC = true;
+    }
+
     void OnMouseDown() {
 
-        if ((!hasMoved) && (!playerStatus.GetComponent<ActionStatus>().pieceSelected)) {
+        if ((!hasMoved) && (!playerStatus.GetComponent<ActionStatus>().pieceSelected) && phaseManager.GetComponent<PhaseManager>().playerPhase && !playerStatus.GetComponent<ActionStatus>().playerMoving) {
             //QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
             playerStatus.GetComponent<ActionStatus>().character = gameObject;
             playerStatus.GetComponent<ActionStatus>().validTiles = traversalGraph;
@@ -45,7 +56,7 @@ public class MoveCharacter : MonoBehaviour
     }
 
     void OnMouseEnter() {
-        if (!hasMoved && !playerStatus.GetComponent<ActionStatus>().pieceSelected) {
+        if (!hasMoved && !playerStatus.GetComponent<ActionStatus>().pieceSelected && phaseManager.GetComponent<PhaseManager>().playerPhase) {
             QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
         }
     }
@@ -101,16 +112,20 @@ public class MoveCharacter : MonoBehaviour
             map[x][y].GetComponent<MeshRenderer>().material = available;
             if (m > 0) { //If node not out of range
                 //Check if left node is off map or if it's a wall
-                if ((x != 0) && (map[x-1][y].GetComponent<TileBehaviour>().status != 3)) { 
+                if ((x != 0) && (map[x-1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x-1][y].GetComponent<TileBehaviour>().HasEnemy())) { 
                     
                     if (m > DictOrDefault(traversalGraph,map[x-1][y].GetInstanceID())) {  //Check if node has been visited or if it has already been checked in a shorter amount of movement
                         if (map[x-1][y].GetComponent<TileBehaviour>().status == 2) { //if water
                             if (m > 1) { //check if movement is sufficient for water
+                                map[x-1][y].GetComponent<Path>().prevX = x;
+                                map[x-1][y].GetComponent<Path>().prevY = y;
                                 validTiles.Add(map[x-1][y]); //Add to visitable tiles
                                 traversalGraph[map[x-1][y].GetInstanceID()] = m-2; //
                                 q.Enqueue(new List<int> {x-1, y, m-2});
                             }
                         } else { //if plains
+                            map[x-1][y].GetComponent<Path>().prevX = x;
+                            map[x-1][y].GetComponent<Path>().prevY = y;
                             validTiles.Add(map[x-1][y]);
                             traversalGraph[map[x-1][y].GetInstanceID()] = m-1;
                             q.Enqueue(new List<int> {x-1, y, m-1});
@@ -118,15 +133,19 @@ public class MoveCharacter : MonoBehaviour
                     }
                 }
                 //Check if bottom node is off map or if it's a wall
-                if ((y != 0) && (map[x][y-1].GetComponent<TileBehaviour>().status != 3)) {
+                if ((y != 0) && (map[x][y-1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y-1].GetComponent<TileBehaviour>().HasEnemy())) {
                     if (m > DictOrDefault(traversalGraph,map[x][y-1].GetInstanceID())) {
                         if (map[x][y-1].GetComponent<TileBehaviour>().status == 2) {
                             if (m > 1) {
+                                map[x][y-1].GetComponent<Path>().prevX = x;
+                                map[x][y-1].GetComponent<Path>().prevY = y;
                                 validTiles.Add(map[x][y-1]);
                                 traversalGraph[map[x][y-1].GetInstanceID()] = m-2;
                                 q.Enqueue(new List<int> {x, y-1, m-2});
                             }
                         } else {
+                            map[x][y-1].GetComponent<Path>().prevX = x;
+                            map[x][y-1].GetComponent<Path>().prevY = y;
                             validTiles.Add(map[x][y-1]);
                             traversalGraph[map[x][y-1].GetInstanceID()] = m-1;
                             q.Enqueue(new List<int> {x, y-1, m-1});
@@ -134,15 +153,19 @@ public class MoveCharacter : MonoBehaviour
                     }
                 }
                 //Check if right node is off map or if it's a wall
-                if ((x != (map.Count-1)) && (map[x+1][y].GetComponent<TileBehaviour>().status != 3)) {
+                if ((x != (map.Count-1)) && (map[x+1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x+1][y].GetComponent<TileBehaviour>().HasEnemy())) {
                     if (m > DictOrDefault(traversalGraph,map[x+1][y].GetInstanceID())) {
                         if (map[x+1][y].GetComponent<TileBehaviour>().status == 2) {
                             if (m > 1) {
+                                map[x+1][y].GetComponent<Path>().prevX = x;
+                                map[x+1][y].GetComponent<Path>().prevY = y;
                                 validTiles.Add(map[x+1][y]);
                                 traversalGraph[map[x+1][y].GetInstanceID()] = m-2;
                                 q.Enqueue(new List<int> {x+1, y, m-2});
                             }
                         } else {
+                            map[x+1][y].GetComponent<Path>().prevX = x;
+                            map[x+1][y].GetComponent<Path>().prevY = y;
                             validTiles.Add(map[x+1][y]);
                             traversalGraph[map[x+1][y].GetInstanceID()] = m-1;
                             q.Enqueue(new List<int> {x+1, y, m-1});
@@ -150,15 +173,19 @@ public class MoveCharacter : MonoBehaviour
                     }
                 }
                 //Check if right node is off map or if it's a wall
-                if ((y != (map[0].Count-1)) && (map[x][y+1].GetComponent<TileBehaviour>().status != 3)) {
+                if ((y != (map[0].Count-1)) && (map[x][y+1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y+1].GetComponent<TileBehaviour>().HasEnemy())) {
                     if (m > DictOrDefault(traversalGraph,map[x][y+1].GetInstanceID())) {
                         if (map[x][y+1].GetComponent<TileBehaviour>().status == 2) {
                             if (m > 1) {
+                                map[x][y+1].GetComponent<Path>().prevX = x;
+                                map[x][y+1].GetComponent<Path>().prevY = y;
                                 validTiles.Add(map[x][y+1]);
                                 traversalGraph[map[x][y+1].GetInstanceID()] = m-2;
                                 q.Enqueue(new List<int> {x, y+1, m-2});
                             }
                         } else {
+                            map[x][y+1].GetComponent<Path>().prevX = x;
+                            map[x][y+1].GetComponent<Path>().prevY = y;
                             validTiles.Add(map[x][y+1]);
                             traversalGraph[map[x][y+1].GetInstanceID()] = m-1;
                             q.Enqueue(new List<int> {x, y+1, m-1});
@@ -167,7 +194,38 @@ public class MoveCharacter : MonoBehaviour
                 }
             }
         }
+
         //map[i][j].GetComponent<MeshRenderer>().material = available;
+    }
+ 
+    public void BeginMove(int targetX, int targetY) {
+        int startX = gameObject.transform.parent.GetComponent<TileBehaviour>().x;
+        int startY = gameObject.transform.parent.GetComponent<TileBehaviour>().y;
+        int tries = 0;
+        validPath.Clear();
+        int pathX = targetX;
+        int pathY = targetY;
+        while (!(pathX == startX && pathY == startY) && (tries < 500)) {
+            //map[pathX][pathY].GetComponent<MeshRenderer>().material = selected;
+            validPath.Add(new List<int> {pathX, pathY});
+            int ph = pathX;
+            pathX = map[pathX][pathY].GetComponent<Path>().prevX;
+            pathY = map[ph][pathY].GetComponent<Path>().prevY;
+        }
+        Debug.Log(validPath.Count);
+        StartCoroutine(Move());
+    }
+    IEnumerator Move() {
+        int len = validPath.Count-1;
+        int m = 0;
+        while (len - m >= 0) {    
+            if (len-m >= 0) {
+                gameObject.transform.SetParent(map[validPath[len-m][0]][validPath[len-m][1]].transform, false);
+                yield return new WaitForSeconds(0.05f);
+            }
+            m += 1;
+        }
+        playerStatus.GetComponent<ActionStatus>().playerMoving = false;
     }
 
     // public void StartTileUpdate(int i, int j, int movement) {

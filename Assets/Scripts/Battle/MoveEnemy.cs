@@ -6,22 +6,23 @@ public class MoveEnemy : MonoBehaviour
 {
 
     public List<List<GameObject>> map;
-    public List<GameObject> validTiles;
+    public List<List<int>> validPath;
     public Dictionary<int,int> traversalGraph;
     public int targetX;
     public int targetY;
     public int movementDistance;
     public Material available;
     public Heap a;
+    public bool isMoving;
     // Start is called before the first frame update
     void Start()
     {
         a = new Heap();
-        targetX = 21;
-        targetY = 12;
+        targetX = 14;
+        targetY = 20;
 
         traversalGraph = new Dictionary<int, int>();
-        validTiles = new List<GameObject>();
+        validPath = new List<List<int>>();
     }
 
     // Update is called once per frame
@@ -29,27 +30,6 @@ public class MoveEnemy : MonoBehaviour
     {
         
     }
-
-    void OnMouseEnter() {
-        Debug.Log("Start");
-        QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
-    }
-
-    // void OnMouseExit() {
-    //     foreach (GameObject valid in validTiles) {
-    //         switch (valid.GetComponent<TileBehaviour>().status) {
-    //             case 1:
-    //                 valid.GetComponent<MeshRenderer>().material = plains;
-    //                 break;
-    //             case 2:
-    //                 valid.GetComponent<MeshRenderer>().material = water;
-    //                 break;
-    //             case 3:
-    //                 valid.GetComponent<MeshRenderer>().material = wall;
-    //                 break;
-    //         }
-    //     }    
-    // }
 
     public class Heap {
         public List<List<int>> h;
@@ -74,7 +54,6 @@ public class MoveEnemy : MonoBehaviour
             string toprint = "";
             foreach (List<int> a in h) {
                 toprint = (toprint + " | " + a[0] + "," + a[1]);
-                //Debug.Log(a[0] + "," + a[1]);
             }
             Debug.Log(toprint);
         }
@@ -138,12 +117,13 @@ public class MoveEnemy : MonoBehaviour
 
 
 
-    public void QueueUpdate(int i, int j, int movement) {
+    public void QueueUpdate(int i, int j) {
+        isMoving = true;
         //validTiles = new List<GameObject>(); //Stores tiles that we can move to
         traversalGraph.Clear(); //Stores amount of movement it takes to get to each valid tile
         a.Clear();
-        traversalGraph[map[i][j].GetInstanceID()] = movement; //Root takes 0 movement to get to
-        a.Insert(calcHeur(i, j, movement),i,j,movement);
+        traversalGraph[map[i][j].GetInstanceID()] = movementDistance; //Root takes 0 movement to get to
+        a.Insert(calcHeur(i, j, movementDistance),i,j,movementDistance);
         //q.Enqueue(new List<int> {i, j, movement}); //Add root to queue, nodes are in form of (x value, y value, movement remaining)
         //int tries = 0; this line was used for testing when i was getting infinite runtime errors
         List<int> curr;
@@ -162,7 +142,7 @@ public class MoveEnemy : MonoBehaviour
 
 
             //Check if left node is off map or if it's a wall
-            if ((x != 0) && (map[x-1][y].GetComponent<TileBehaviour>().status != 3)) { 
+            if ((targetX == x-1 && targetY == y) || ((x != 0) && (map[x-1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x-1][y].GetComponent<TileBehaviour>().HasAlly()))) { 
                   //Check if node has been visited or if it has already been checked in a shorter amount of movement
                 if (map[x-1][y].GetComponent<TileBehaviour>().status == 2) { //if water
                     if (calcHeur(x-1, y, m-2) < DictOrDefault(traversalGraph,map[x-1][y].GetInstanceID())) {                    
@@ -181,7 +161,7 @@ public class MoveEnemy : MonoBehaviour
                 }       
             }
             //Check if bottom node is off map or if it's a wall
-            if ((y != 0) && (map[x][y-1].GetComponent<TileBehaviour>().status != 3)) { 
+            if ((targetX == x && targetY == y-1) || ((y != 0) && (map[x][y-1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y-1].GetComponent<TileBehaviour>().HasAlly()))) { 
                   //Check if node has been visited or if it has already been checked in a shorter amount of movement
                 if (map[x][y-1].GetComponent<TileBehaviour>().status == 2) { //if water
                     if (calcHeur(x, y-1, m-2) < DictOrDefault(traversalGraph,map[x][y-1].GetInstanceID())) {                    
@@ -200,7 +180,7 @@ public class MoveEnemy : MonoBehaviour
                 }       
             }
             //Check if right node is off map or if it's a wall
-            if ((x != (map.Count-1)) && (map[x+1][y].GetComponent<TileBehaviour>().status != 3)) { 
+            if ((targetX == x+1 && targetY == y) || ((x != (map.Count-1)) && (map[x+1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x+1][y].GetComponent<TileBehaviour>().HasAlly()))) { 
                   //Check if node has been visited or if it has already been checked in a shorter amount of movement
                 if (map[x+1][y].GetComponent<TileBehaviour>().status == 2) { //if water
                     if (calcHeur(x+1, y, m-2) < DictOrDefault(traversalGraph,map[x+1][y].GetInstanceID())) {                    
@@ -219,7 +199,7 @@ public class MoveEnemy : MonoBehaviour
                 }       
             }
             //Check if right node is off map or if it's a wall
-            if ((y != (map[0].Count-1)) && (map[x][y+1].GetComponent<TileBehaviour>().status != 3)) { 
+            if ((targetX == x-1 && targetY == y) || ((y != (map[0].Count-1)) && (map[x][y+1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y+1].GetComponent<TileBehaviour>().HasAlly()))) { 
                   //Check if node has been visited or if it has already been checked in a shorter amount of movement
                 if (map[x][y+1].GetComponent<TileBehaviour>().status == 2) { //if water
                     if (calcHeur(x, y+1, m-2) < DictOrDefault(traversalGraph,map[x][y+1].GetInstanceID())) {                    
@@ -243,12 +223,32 @@ public class MoveEnemy : MonoBehaviour
         int pathX = targetX;
         int pathY = targetY;
         int tries = 0;
+        validPath.Clear();
         while (!(pathX == i && pathY == j) && (tries < 500)) {
-            map[pathX][pathY].GetComponent<MeshRenderer>().material = available;
+            //map[pathX][pathY].GetComponent<MeshRenderer>().material = available;
             int ph = pathX;
             pathX = map[pathX][pathY].GetComponent<Path>().prevX;
             pathY = map[ph][pathY].GetComponent<Path>().prevY;
+            validPath.Add(new List<int> {pathX, pathY});
         }
-        map[pathX][pathY].GetComponent<MeshRenderer>().material = available;
+        //map[pathX][pathY].GetComponent<MeshRenderer>().material = available;
+        StartCoroutine(Move());
+    }
+
+    public bool IsMoving() {
+        return isMoving;
+    }
+
+    IEnumerator Move() {
+        int len = validPath.Count-1;
+        //Debug.Log("Check");
+        for (int m = 0; m < movementDistance; m++) {    
+            string print = validPath[len-m][0] + "," + validPath[len-m][1]; 
+            if (len-m >= 0) {
+                gameObject.transform.SetParent(map[validPath[len-m][0]][validPath[len-m][1]].transform, false);
+                yield return new WaitForSeconds(0.05f);
+            }
+        }
+        isMoving = false;
     }
 }

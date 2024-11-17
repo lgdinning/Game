@@ -147,6 +147,8 @@ MonoBehaviour:
   plains: {fileID: 2100000, guid: 43e0270b36d509a47b5b0dbe9337abd0, type: 2}
   water: {fileID: 2100000, guid: 0a9dd960399b8354285c82f1ca703cc5, type: 2}
   wall: {fileID: 2100000, guid: 502219c049a79fe41977cd9beadbd916, type: 2}
+  phaseManager: {fileID: 629754213}
+  playerMoving: 0
 --- !u!114 &43763698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,11 +424,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89ad6eed2d68f6b4a868588c0679d9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  validTiles: []
   targetX: 0
   targetY: 0
   movementDistance: 0
   available: {fileID: 0}
+  isMoving: 0
 --- !u!4 &475258598
 Transform:
   m_ObjectHideFlags: 0
@@ -477,6 +479,7 @@ MonoBehaviour:
   playerPieces: []
   enemyPieces: []
   playerPhase: 0
+  playerMoving: 0
 --- !u!65 &629754215
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -662,6 +665,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6837668093575763092, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
   m_PrefabInstance: {fileID: 1891989566111351241}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &711224657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 711224651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e47e5f9d26dce9044a6cda073fd39a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ally: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -879,6 +895,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3235087556874926188, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
   m_PrefabInstance: {fileID: 3034521314041199829}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1821555444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821555438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e47e5f9d26dce9044a6cda073fd39a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ally: 1
 --- !u!1 &2114989596
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,6 +1031,7 @@ MonoBehaviour:
   character: {fileID: 0}
   validTileList: []
   phaseManager: {fileID: 629754213}
+  playerMoving: 0
 --- !u!1001 &1699771729935807776
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1086,9 +1116,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 274561879174746600, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
+      propertyPath: targetX
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 274561879174746600, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
+      propertyPath: targetY
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 274561879174746600, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
       propertyPath: available
       value: 
       objectReference: {fileID: 2100000, guid: bced26bd6a1b8ce47ab4883b17e50eed, type: 2}
+    - target: {fileID: 274561879174746600, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
+      propertyPath: movementDistance
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 5106693339553862098, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.5499735
@@ -1136,7 +1178,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6837668093575763092, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 711224657}
   m_SourcePrefab: {fileID: 100100000, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
 --- !u!1001 &3034521314041199829
 PrefabInstance:
@@ -1167,6 +1212,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 3b0e3497ba36c9345be7bc6fcd9dfd73, type: 2}
     - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
+      propertyPath: selected
+      value: 
+      objectReference: {fileID: 2100000, guid: e1933ae84f54a1843b5aa07ee9408297, type: 2}
+    - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: available
       value: 
       objectReference: {fileID: 2100000, guid: bced26bd6a1b8ce47ab4883b17e50eed, type: 2}
@@ -1175,12 +1224,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 9cafb35e7499728429d7d6f5a7ce6e05, type: 2}
     - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
+      propertyPath: phaseManager
+      value: 
+      objectReference: {fileID: 629754213}
+    - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: playerStatus
       value: 
       objectReference: {fileID: 2114989596}
     - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: movementDistance
-      value: 15
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7550303750005811417, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: m_LocalScale.y
@@ -1229,7 +1282,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3235087556874926188, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821555444}
   m_SourcePrefab: {fileID: 100100000, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

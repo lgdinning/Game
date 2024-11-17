@@ -10,6 +10,7 @@ public class ActionStatus : MonoBehaviour
     public Dictionary<int,int> validTiles;
     public List<GameObject> validTileList;
     public GameObject phaseManager;
+    public bool playerMoving;
     // Start is called before the first frame update
     void Start()
     {
