@@ -81,7 +81,6 @@ public class MoveCharacter : MonoBehaviour
     public void QueueUpdate(int i, int j, int movement) {
         validTiles = new List<GameObject>(); //Stores tiles that we can move to
         traversalGraph.Clear(); //Stores amount of movement it takes to get to each valid tile
-        //remainingMove.Clear();
         Queue<List<int>> q = new Queue<List<int>>(); //Order of traversal
         validTiles.Add(map[i][j]); //Add root node (where player piece is)
         traversalGraph[map[i][j].GetInstanceID()] = movement; //Root takes 0 movement to get to
@@ -167,7 +166,7 @@ public class MoveCharacter : MonoBehaviour
                     }
                 }
             }
-        } 
+        }
         //map[i][j].GetComponent<MeshRenderer>().material = available;
     }
 

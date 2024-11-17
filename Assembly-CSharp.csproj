@@ -45,6 +45,7 @@
      <Compile Include="Assets\Scripts\Battle\CameraMove.cs" />
      <Compile Include="Assets\Scripts\Battle\TileBehaviour.cs" />
      <Compile Include="Assets\Scripts\Battle\UpdateValidMoves.cs" />
+     <Compile Include="Assets\Scripts\Battle\Path.cs" />
      <Compile Include="Assets\Scripts\Battle\ActionStatus.cs" />
      <Compile Include="Assets\Scripts\Battle\CharacterAttack.cs" />
      <Compile Include="Assets\Scripts\Battle\MoveEnemy.cs" />

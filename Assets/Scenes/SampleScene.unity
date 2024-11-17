@@ -147,6 +147,20 @@ MonoBehaviour:
   plains: {fileID: 2100000, guid: 43e0270b36d509a47b5b0dbe9337abd0, type: 2}
   water: {fileID: 2100000, guid: 0a9dd960399b8354285c82f1ca703cc5, type: 2}
   wall: {fileID: 2100000, guid: 502219c049a79fe41977cd9beadbd916, type: 2}
+--- !u!114 &43763698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 43763692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34d4db871359c7840b2676a1c41d5b2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prevX: 0
+  prevY: 0
 --- !u!1 &194006647
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,8 +198,9 @@ MonoBehaviour:
   water: {fileID: 2100000, guid: 0a9dd960399b8354285c82f1ca703cc5, type: 2}
   tile: {fileID: 43763692}
   piece: {fileID: 1821555438}
-  length: 50
-  width: 50
+  enemy: {fileID: 711224651}
+  length: 20
+  width: 25
   phaseManager: {fileID: 629754213}
 --- !u!65 &194006649
 BoxCollider:
@@ -408,6 +423,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   validTiles: []
+  targetX: 0
+  targetY: 0
+  movementDistance: 0
+  available: {fileID: 0}
 --- !u!4 &475258598
 Transform:
   m_ObjectHideFlags: 0
@@ -638,6 +657,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &711224651 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6837668093575763092, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
+  m_PrefabInstance: {fileID: 1891989566111351241}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,7 +749,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalPosition: {x: 0, y: 20, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1049,6 +1073,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6928698689334425509, guid: 9851f56ff96542647ad3b3791f19c1af, type: 3}
       insertIndex: -1
       addedObject: {fileID: 43763697}
+    - targetCorrespondingSourceObject: {fileID: 6928698689334425509, guid: 9851f56ff96542647ad3b3791f19c1af, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 43763698}
   m_SourcePrefab: {fileID: 100100000, guid: 9851f56ff96542647ad3b3791f19c1af, type: 3}
 --- !u!1001 &1891989566111351241
 PrefabInstance:
@@ -1058,6 +1085,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 274561879174746600, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
+      propertyPath: available
+      value: 
+      objectReference: {fileID: 2100000, guid: bced26bd6a1b8ce47ab4883b17e50eed, type: 2}
     - target: {fileID: 5106693339553862098, guid: 8baaff7aabdd9544fb9d34e452cfdfc7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.5499735
@@ -1149,7 +1180,7 @@ PrefabInstance:
       objectReference: {fileID: 2114989596}
     - target: {fileID: 3734447622502607464, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: movementDistance
-      value: 4
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7550303750005811417, guid: 75f1fd6ec8af62a43a11fbfbdf91db94, type: 3}
       propertyPath: m_LocalScale.y

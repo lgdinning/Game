@@ -357,6 +357,7 @@
 "Assets/Scripts/Battle/CharacterAttack.cs"
 "Assets/Scripts/Battle/MoveCharacter.cs"
 "Assets/Scripts/Battle/MoveEnemy.cs"
+"Assets/Scripts/Battle/Path.cs"
 "Assets/Scripts/Battle/PhaseManager.cs"
 "Assets/Scripts/Battle/TileBehaviour.cs"
 "Assets/Scripts/Battle/TileSpawn.cs"
