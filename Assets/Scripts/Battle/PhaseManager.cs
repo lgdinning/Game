@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class PhaseManager : MonoBehaviour
 {
+    public GameObject actionStatus;
+    public GameObject enemyDisplay;
     public List<GameObject> playerPieces;
     public List<GameObject> enemyPieces;
     public bool playerPhase;
-    public bool playerMoving;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,7 +19,8 @@ public class PhaseManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Backspace)) {
+        if (playerPhase && !actionStatus.GetComponent<ActionStatus>().playerMoving && Input.GetKeyDown(KeyCode.Backspace)) {
+            playerPhase = false;
             SetPlayerTurn(false);
             CheckPlayerDone();
         }
@@ -57,9 +60,19 @@ public class PhaseManager : MonoBehaviour
 
     IEnumerator EnemyTurn() {
         foreach (GameObject e in enemyPieces) {
+            
+            if (e.GetComponent<MoveEnemy>().displaying) {
+                e.GetComponent<MoveEnemy>().BFS(e.transform.parent.GetComponent<TileBehaviour>().x, e.transform.parent.GetComponent<TileBehaviour>().y, e.GetComponent<MoveEnemy>().movementDistance);
+                //Debug.Log(e.GetComponent<MoveEnemy>().attackableTiles.Count);
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, false, 1);
+            }
             e.GetComponent<MoveEnemy>().QueueUpdate(e.transform.parent.GetComponent<TileBehaviour>().x, e.transform.parent.GetComponent<TileBehaviour>().y); 
             while (e.GetComponent<MoveEnemy>().isMoving) {
                 yield return null;
+            }
+            if (e.GetComponent<MoveEnemy>().displaying) {
+                e.GetComponent<MoveEnemy>().BFS(e.transform.parent.GetComponent<TileBehaviour>().x, e.transform.parent.GetComponent<TileBehaviour>().y, e.GetComponent<MoveEnemy>().movementDistance);
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, true, 1);
             }
         }
         SetPlayerTurn(true);

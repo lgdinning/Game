@@ -15,6 +15,7 @@ public class NewBehaviourScript : MonoBehaviour
     public List<List<GameObject>> grid;
     public System.Random rand;
     public GameObject phaseManager;
+    public GameObject enemyDisplay;
     private int randNum;
     // Start is called before the first frame update
     void Start()
@@ -49,22 +50,22 @@ public class NewBehaviourScript : MonoBehaviour
     }
 
     public List<List<int>> test1 = new List<List<int>> {
-        new List<int>{13,13,13,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        new List<int>{13,13,13,1,1,2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,13,13,13,1},
+        new List<int>{1,2,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,3,3,3,3,3,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        new List<int>{1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        new List<int>{1,1,1,1,1,1,1,1,1,11,20,11,1,1,1,1,1,1,1,1,1,1,1,1}
+        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,3,3,3,3,3,3,3,3,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,3,3,3,3,3,3,3,3,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,1,1,1,11,1,1,1,2,1,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,1,1,3,3,3,1,1,1,3,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,3,3,1,1,1,1,1,1,1},
+        new List<int>{1,1,1,1,1,2,1,2,2,11,20,1,1,1,2,2,2,2,1,1,1,1,1,1}
     // new List<int>{3,3,3,3,1,1,3,1,1,1,1,1,1,1,1,1,13,13,13,1,1,1,11,3},
     // new List<int>{1,3,3,3,1,1,3,1,1,3,3,1,1,1,1,1,1,1,1,1,1,1,1,3},
     // new List<int>{1,3,3,3,11,1,3,1,1,3,3,1,1,1,1,1,1,1,1,1,1,1,3,3},
@@ -91,6 +92,8 @@ public class NewBehaviourScript : MonoBehaviour
     };
 
     public void Spawn(List<List<int>> reference) {
+        int kingX = -1;
+        int kingY = -1;
         grid = new List<List<GameObject>>();
         GameObject thisPiece;
         for (int x = 0; x < reference.Count; x++) {
@@ -138,6 +141,8 @@ public class NewBehaviourScript : MonoBehaviour
                         grid[x][y].GetComponent<TileBehaviour>().status = 1;
                         break;
                     case 20:
+                        kingX = x;
+                        kingY = y;
                         thisPiece = Instantiate(piece, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
@@ -153,6 +158,9 @@ public class NewBehaviourScript : MonoBehaviour
                 grid[x][y].GetComponent<TileBehaviour>().y = y;
             }
         }
+        enemyDisplay.GetComponent<DisplayManager>().map = grid;
+        //Debug.Log(kingX + "," + kingY);
+        phaseManager.GetComponent<PhaseManager>().UpdateTarget(kingX,kingY);
         // for (int x = 0; x < reference.Count; x++) {
 
         //     Debug.Log(grid[x].Count);

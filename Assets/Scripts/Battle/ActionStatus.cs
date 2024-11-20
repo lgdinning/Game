@@ -8,7 +8,8 @@ public class ActionStatus : MonoBehaviour
     public bool pieceSelected = false;
     public GameObject character;
     public Dictionary<int,int> validTiles;
-    public List<GameObject> validTileList;
+    public HashSet<GameObject> validTileList;
+    public HashSet<GameObject> attackableTiles;
     public GameObject phaseManager;
     public bool playerMoving;
     // Start is called before the first frame update
@@ -31,6 +32,7 @@ public class ActionStatus : MonoBehaviour
             character.GetComponent<MoveCharacter>().hasMoved = true;
             character.GetComponent<MeshRenderer>().material = shade;
             phaseManager.GetComponent<PhaseManager>().CheckPlayerDone();
+            playerMoving = false;
         }
     }
 }

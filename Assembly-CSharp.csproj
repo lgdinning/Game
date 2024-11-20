@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\Battle\CharacterAttack.cs" />
      <Compile Include="Assets\Scripts\Battle\MoveEnemy.cs" />
      <Compile Include="Assets\Scripts\Battle\MoveCharacter.cs" />
+     <Compile Include="Assets\Scripts\Battle\DisplayManager.cs" />
      <Compile Include="Assets\Scripts\Battle\AllyOrEnemy.cs" />
      <Compile Include="Assets\Scripts\Station\DialogueDatabase.cs" />
      <Compile Include="Assets\Scripts\Station\StationStateManager.cs" />

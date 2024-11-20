@@ -42,8 +42,8 @@ public class TileBehaviour : MonoBehaviour
     }
 
     void OnMouseDown() {
-        if ((playerStatus.GetComponent<ActionStatus>().pieceSelected) && (gameObject.transform.childCount == 0) && (playerStatus.GetComponent<ActionStatus>().validTiles.ContainsKey(gameObject.GetInstanceID()))) {
-            foreach (GameObject valid in playerStatus.GetComponent<ActionStatus>().validTileList) {
+        if (!playerStatus.GetComponent<ActionStatus>().playerMoving && (playerStatus.GetComponent<ActionStatus>().pieceSelected) && (gameObject.transform.childCount == 0) && (playerStatus.GetComponent<ActionStatus>().validTiles.ContainsKey(gameObject.GetInstanceID()))) {
+            foreach (GameObject valid in playerStatus.GetComponent<ActionStatus>().attackableTiles) {
                 switch (valid.GetComponent<TileBehaviour>().status) {
                     case 1:
                         valid.GetComponent<MeshRenderer>().material = plains;

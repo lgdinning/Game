@@ -356,6 +356,7 @@
 "Assets/Scripts/Battle/AllyOrEnemy.cs"
 "Assets/Scripts/Battle/CameraMove.cs"
 "Assets/Scripts/Battle/CharacterAttack.cs"
+"Assets/Scripts/Battle/DisplayManager.cs"
 "Assets/Scripts/Battle/MoveCharacter.cs"
 "Assets/Scripts/Battle/MoveEnemy.cs"
 "Assets/Scripts/Battle/Path.cs"

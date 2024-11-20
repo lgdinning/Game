@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1805
     height: 973
   m_ShowMode: 4
-  m_Title: Console
+  m_Title: Inspector
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -391,8 +391,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: a0590000
-    m_LastClickedInstanceID: 22944
+    m_SelectedInstanceIDs: 
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000000000000
     m_RenameOverlay:
@@ -862,9 +862,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 7.02285, y: 9.9693365, z: 10.423248}
+    m_Target: {x: 0, y: 20, z: 0}
     speed: 2
-    m_Value: {x: 7.02285, y: 9.9693365, z: 10.423248}
+    m_Value: {x: 0, y: 20, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -914,9 +914,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: -0.46344793, y: -0.5299938, z: 0.44172636, w: -0.556058}
   m_Size:
-    m_Target: 0.6465464
+    m_Target: 12.124355
     speed: 2
-    m_Value: 0.6465464
+    m_Value: 12.124355
   m_Ortho:
     m_Target: 0
     speed: 2
