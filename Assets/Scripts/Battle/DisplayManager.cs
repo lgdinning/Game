@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class DisplayManager : MonoBehaviour
 {
-    public List<List<GameObject>> map;
-    public Dictionary<GameObject,int> depthChart;
-    public Material plains;
-    public Material water;
-    public Material wall;
-    public Material enemy;
+    public List<List<GameObject>> map; //Grid of all tiles in map
+    public Dictionary<GameObject,int> depthChart; //Dictionary carrying the tiles that are on the map and how many enemies can reach said tile
+    public Material plains; //Green for plains
+    public Material water; //Blue for water
+    public Material wall; //Red for wall
+    public Material enemy; //Pink for enemy range
     // Start is called before the first frame update
     void Start()
     {
-        depthChart = new Dictionary<GameObject, int>();
+        depthChart = new Dictionary<GameObject, int>(); // Initialize
     }
 
     // Update is called once per frame
@@ -22,15 +22,22 @@ public class DisplayManager : MonoBehaviour
         
     }
 
-    public void UpdateDisplay(HashSet<GameObject> set, bool up, int add) {
-        if (!up) {
+    //General Theory
+    //We keep a dictionary (DepthChart) and update it when enabling or disabling enemy range indicator.
+    //Add a point to a tile's depth chart when an enemy can move there and range is enabled. Remove one when enemy can move there that is disabled.
+    //Mark red all tiles that can be moved to and are enabled.
+    //set is the set of valid tiles that can be moved to
+    //up determines if range is being enabled or disabled
+    //add is 1
+    public void UpdateDisplay(HashSet<GameObject> set, bool up, int add) { //Call this when an enemy range is enabled or disabled
+        if (!up) { //If disabling, we set add to negative
             add = add * -1;
         } 
         foreach (GameObject tile in set) {
             
-            if (depthChart.TryGetValue(tile, out int depth)) {
+            if (depthChart.TryGetValue(tile, out int depth)) { //If it's in the dictionary already
 
-                if (depth + add <= 0) {
+                if (depth + add <= 0) { //If tile depth <= 0, it is no longer in enemy range and we change it back to its normal colour
                     
                     depthChart.Remove(tile);
                     switch (tile.GetComponent<TileBehaviour>().status) {
@@ -44,13 +51,13 @@ public class DisplayManager : MonoBehaviour
                             tile.GetComponent<MeshRenderer>().material = wall;
                             break;
                     }
-                } else {
-                    depthChart[tile] += add;
+                } else { //Otherwise add to depth
+                    depthChart[tile] += add; 
                 }
-            } else {
+            } else { //If not in dictionary
 
-                depthChart[tile] = add;
-                tile.GetComponent<MeshRenderer>().material = enemy;
+                depthChart[tile] = add; //Add it in
+                tile.GetComponent<MeshRenderer>().material = enemy; //Visually show that it is in range
             }
         }
     } 

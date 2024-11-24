@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class CharacterAttack : MonoBehaviour
 {
-    public int hp;
-    public int atk;
-    public int nrg;
-    public int spd;
-    public int skl;
-    public int fin;
-    public int arm;
-    public int shld;
-    public int wgt; 
+    public int hp; //Health a character has
+    public int atk; //Physical damage a character deals
+    public int nrg; //Energy damage a character deals
+    public int spd; //Speed determines how many times you attack in battle
+    public int skl; //Determines hit rate and slight crit
+    public int fin; //Determines dodge rate and crit rate
+    public int arm; //Resistance to physical damage
+    public int shld; //Resistance to energy damage
+    public int wgt; //Determines how far unit hits another one
 
     // Start is called before the first frame update
     void Start()
