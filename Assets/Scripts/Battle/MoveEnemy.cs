@@ -73,7 +73,7 @@ public class MoveEnemy : MonoBehaviour
     }
 
     void OnMouseExit() {
-        Debug.Log(displaying);
+
         if (!displaying) {
             enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(attackableTiles, false, 1);
         }

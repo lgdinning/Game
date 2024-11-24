@@ -24,7 +24,9 @@ public class TileBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetButton("Fire2") && playerStatus.GetComponent<ActionStatus>().pieceSelected) {
+            playerStatus.GetComponent<ActionStatus>().pieceSelected = !playerStatus.GetComponent<ActionStatus>().pieceSelected;
+        }   
     }
 
     public bool HasAlly() {

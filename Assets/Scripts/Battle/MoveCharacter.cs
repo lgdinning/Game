@@ -38,10 +38,30 @@ public class MoveCharacter : MonoBehaviour
         attackableTiles = new HashSet<GameObject>();
     }
 
+    public bool isClicked;
     // Update is called once per frame
     void Update()
     {
 
+        if (Input.GetKeyDown(KeyCode.Mouse1) && isClicked) {
+            Debug.Log(attackableTiles.Count);
+            playerStatus.GetComponent<ActionStatus>().pieceSelected = !playerStatus.GetComponent<ActionStatus>().pieceSelected;
+            foreach (GameObject valid in attackableTiles) {
+                switch (valid.GetComponent<TileBehaviour>().status) {
+                    case 1:
+                        valid.GetComponent<MeshRenderer>().material = plains;
+                        break;
+                    case 2:
+                        valid.GetComponent<MeshRenderer>().material = water;
+                        break;
+                    case 3:
+                        valid.GetComponent<MeshRenderer>().material = wall;
+                        break;
+                }
+            }
+            isClicked = false;
+        }
+        
     }
 
     public void SetMC() {
@@ -49,7 +69,7 @@ public class MoveCharacter : MonoBehaviour
     }
 
     void OnMouseDown() {
-
+        isClicked = true;
         if ((!hasMoved) && (!playerStatus.GetComponent<ActionStatus>().pieceSelected) && phaseManager.GetComponent<PhaseManager>().playerPhase && !playerStatus.GetComponent<ActionStatus>().playerMoving) {
             QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
             playerStatus.GetComponent<ActionStatus>().character = gameObject;
@@ -278,7 +298,7 @@ public class MoveCharacter : MonoBehaviour
             pathX = map[pathX][pathY].GetComponent<Path>().prevX;
             pathY = map[ph][pathY].GetComponent<Path>().prevY;
         }
-        Debug.Log(validPath.Count);
+ 
         StartCoroutine(Move());
     }
     IEnumerator Move() {
