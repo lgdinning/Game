@@ -23,6 +23,9 @@ public class MoveEnemy : MonoBehaviour
     public bool isMoving;
     public bool displaying;
     public GameObject enemyDisplay;
+    public GameObject actionManager;
+    public ActionStatus state;
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +34,7 @@ public class MoveEnemy : MonoBehaviour
         validTiles = new HashSet<GameObject>();
         attackableTiles = new HashSet<GameObject>();
         validPath = new List<List<int>>();
+        state = actionManager.GetComponent<ActionStatus>();
     }
 
     public void ToggleOn() {
@@ -56,25 +60,27 @@ public class MoveEnemy : MonoBehaviour
     }
 
     void OnMouseDown() {
-        
-        BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
-        if (!isMoving) {
-            displaying = !displaying;
+        if (state.state == 1 && !actionManager.GetComponent<ActionStatus>().playerMoving) {
+            BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+            if (!isMoving) {
+                displaying = !displaying;
+            }
         }
-        
 
     }
 
     void OnMouseEnter() {
-        BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
-        if (!displaying) {
-            enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(attackableTiles, true, 1);
+        if (state.state == 1 && !actionManager.GetComponent<ActionStatus>().playerMoving) {
+            BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+            if (!displaying) {
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(attackableTiles, true, 1);
+            }
         }
     }
 
     void OnMouseExit() {
 
-        if (!displaying) {
+        if (state.state == 1 && !displaying) {
             enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(attackableTiles, false, 1);
         }
     }
@@ -198,7 +204,7 @@ public class MoveEnemy : MonoBehaviour
             int m = curr[2];
 
             //Show current node as readable
-            map[x][y].GetComponent<MeshRenderer>().material = attackable;
+            //map[x][y].GetComponent<MeshRenderer>().material = attackable;
             if (m > 0) { //If node not out of range
                 //Check if left node is off map or if it's a wall
                 if (x != 0) {
@@ -323,7 +329,7 @@ public class MoveEnemy : MonoBehaviour
                 }
             } else {
                 if (m < 0) {
-                    map[x][y].GetComponent<MeshRenderer>().material = attackable;
+                    //map[x][y].GetComponent<MeshRenderer>().material = attackable;
                 }
                 if (m > -(attackRange)) {
                     if (x > 0 && !(validTiles.Contains(map[x-1][y]))) {

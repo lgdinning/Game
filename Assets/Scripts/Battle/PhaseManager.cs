@@ -5,6 +5,7 @@ using UnityEngine;
 public class PhaseManager : MonoBehaviour
 {
     public GameObject actionStatus;
+    public ActionStatus state;
     public GameObject enemyDisplay;
     public List<GameObject> playerPieces;
     public List<GameObject> enemyPieces;
@@ -14,12 +15,13 @@ public class PhaseManager : MonoBehaviour
     void Start()
     {
         playerPhase = true;
+        state = actionStatus.GetComponent<ActionStatus>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (playerPhase && !actionStatus.GetComponent<ActionStatus>().playerMoving && Input.GetKeyDown(KeyCode.Backspace)) {
+        if (playerPhase && (state.state == 1) && Input.GetKeyDown(KeyCode.Backspace)) {
             playerPhase = false;
             SetPlayerTurn(false);
             CheckPlayerDone();
@@ -54,6 +56,7 @@ public class PhaseManager : MonoBehaviour
                 return false;
             }
         }
+
         StartCoroutine(EnemyTurn());
         return true;
     }

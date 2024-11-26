@@ -11,11 +11,16 @@ public class SpaceStationMovement : MonoBehaviour
     public GameObject stateManager;
     public bool canInteract;
     public GameObject interactable;
+    public Rigidbody move;
+    private Vector3 direction;
+
 
     // Start is called before the first frame update
     void Start()
     {
         active = true;
+        move = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
@@ -23,16 +28,30 @@ public class SpaceStationMovement : MonoBehaviour
     {
         if (active) {
 
-            verticalInput = Input.GetAxis("Vertical");
-            horizontalInput = Input.GetAxis("Horizontal");
+            verticalInput = Input.GetAxisRaw("Vertical");
+            horizontalInput = Input.GetAxisRaw("Horizontal");
 
-            transform.Translate(Vector3.forward * speed*2 * Time.deltaTime * verticalInput);
-            transform.Translate(Vector3.right * speed*2 * Time.deltaTime * horizontalInput);
+            direction = new Vector3(horizontalInput, 0, verticalInput);
+            direction.Normalize();
+
+            // transform.Translate(Vector3.forward * speed*2 * Time.deltaTime * verticalInput);
+            // transform.Translate(Vector3.right * speed*2 * Time.deltaTime * horizontalInput);
 
             if ((canInteract) && (Input.GetKeyDown(KeyCode.Space))) {
                 stateManager.GetComponent<StationStateManager>().Switch(interactable.GetComponent<SpaceStationInteractable>().index);
             }
         }
+    }
+
+    void FixedUpdate() {
+        if (active) {
+            move.AddForce(direction * speed);
+        }
+        // if ((horizontalInput == 0 && verticalInput == 0)) {
+        //     Debug.Log("Check");
+        //     move.velocity = new Vector3(0,0,0);
+        // }
+
     }
 
     public void Switch() {

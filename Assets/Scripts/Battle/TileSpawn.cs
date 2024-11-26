@@ -120,6 +120,8 @@ public class NewBehaviourScript : MonoBehaviour
                         thisPiece = Instantiate(piece, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
+                        thisPiece.GetComponent<MoveCharacter>().wasX = x;
+                        thisPiece.GetComponent<MoveCharacter>().wasY = y;
                         phaseManager.GetComponent<PhaseManager>().playerPieces.Add(thisPiece);
                         grid[x][y].GetComponent<MeshRenderer>().material = plains;
                         grid[x][y].GetComponent<TileBehaviour>().status = 1;
@@ -128,6 +130,8 @@ public class NewBehaviourScript : MonoBehaviour
                         thisPiece = Instantiate(piece, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
+                        thisPiece.GetComponent<MoveCharacter>().wasX = x;
+                        thisPiece.GetComponent<MoveCharacter>().wasY = y;
                         phaseManager.GetComponent<PhaseManager>().playerPieces.Add(thisPiece);
                         grid[x][y].GetComponent<MeshRenderer>().material = water;
                         grid[x][y].GetComponent<TileBehaviour>().status = 2;
@@ -147,6 +151,8 @@ public class NewBehaviourScript : MonoBehaviour
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
                         thisPiece.GetComponent<MoveCharacter>().SetMC();
+                        thisPiece.GetComponent<MoveCharacter>().wasX = x;
+                        thisPiece.GetComponent<MoveCharacter>().wasY = y;
                         phaseManager.GetComponent<PhaseManager>().playerPieces.Add(thisPiece);
                         grid[x][y].GetComponent<MeshRenderer>().material = plains;
                         grid[x][y].GetComponent<TileBehaviour>().status = 1;

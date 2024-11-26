@@ -18,6 +18,7 @@ public class MoveCharacter : MonoBehaviour
     public List<GameObject> hashSet;
     public List<List<int>> validPath;
     public GameObject playerStatus;
+    public ActionStatus state;
     public bool status = true;
     public Dictionary<int,int> traversalGraph;
     public bool hasMoved;
@@ -28,6 +29,7 @@ public class MoveCharacter : MonoBehaviour
     public int wasX;
     public int wasY;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,32 +38,48 @@ public class MoveCharacter : MonoBehaviour
         traversalGraph = new Dictionary<int, int>();
         validTiles = new HashSet<GameObject>();
         attackableTiles = new HashSet<GameObject>();
+        state = playerStatus.GetComponent<ActionStatus>();
+        isMoving = false;
     }
 
     public bool isClicked;
     // Update is called once per frame
     void Update()
     {
+        if (isMoving && Input.GetKeyDown(KeyCode.Mouse1) && (state.state == 2) && !state.playerMoving) {
+            state.pieceSelected = !state.pieceSelected;
+            //QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
 
-        if (Input.GetKeyDown(KeyCode.Mouse1) && isClicked) {
-            Debug.Log(attackableTiles.Count);
-            playerStatus.GetComponent<ActionStatus>().pieceSelected = !playerStatus.GetComponent<ActionStatus>().pieceSelected;
-            foreach (GameObject valid in attackableTiles) {
-                switch (valid.GetComponent<TileBehaviour>().status) {
-                    case 1:
-                        valid.GetComponent<MeshRenderer>().material = plains;
-                        break;
-                    case 2:
-                        valid.GetComponent<MeshRenderer>().material = water;
-                        break;
-                    case 3:
-                        valid.GetComponent<MeshRenderer>().material = wall;
-                        break;
-                }
-            }
+            WashTiles();
             isClicked = false;
+            state.state = 1;
+        } else if (isMoving && Input.GetKeyDown(KeyCode.Mouse1) && (state.state == 3)) {
+            Reset();
         }
         
+    }
+
+    public void WashTiles() {
+        foreach (GameObject valid in attackableTiles) {
+            switch (valid.GetComponent<TileBehaviour>().status) {
+                case 1:
+                    valid.GetComponent<MeshRenderer>().material = plains;
+                    break;
+                case 2:
+                    valid.GetComponent<MeshRenderer>().material = water;
+                    break;
+                case 3:
+                    valid.GetComponent<MeshRenderer>().material = wall;
+                    break;
+            }
+        }
+    }
+
+    public void Reset() {
+        WashTiles();
+        gameObject.transform.SetParent(map[wasX][wasY].transform, false);
+        state.state = 1;
+        isMoving = false;
     }
 
     public void SetMC() {
@@ -69,39 +87,43 @@ public class MoveCharacter : MonoBehaviour
     }
 
     void OnMouseDown() {
-        isClicked = true;
-        if ((!hasMoved) && (!playerStatus.GetComponent<ActionStatus>().pieceSelected) && phaseManager.GetComponent<PhaseManager>().playerPhase && !playerStatus.GetComponent<ActionStatus>().playerMoving) {
-            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
-            playerStatus.GetComponent<ActionStatus>().character = gameObject;
-            playerStatus.GetComponent<ActionStatus>().validTiles = traversalGraph;
-            playerStatus.GetComponent<ActionStatus>().validTileList = validTiles;
-            playerStatus.GetComponent<ActionStatus>().attackableTiles = attackableTiles;
-            playerStatus.GetComponent<ActionStatus>().Toggle();
 
+        if ((!hasMoved) && (!state.pieceSelected) && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
+            isMoving = true;
+            wasX = gameObject.transform.parent.GetComponent<TileBehaviour>().x;
+            wasY = gameObject.transform.parent.GetComponent<TileBehaviour>().y;
+            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+            
+            state.character = gameObject;
+            state.validTiles = traversalGraph;
+            state.validTileList = validTiles;
+            state.attackableTiles = attackableTiles;
+            state.Shift();
+            state.Toggle();
+
+        } else if (isMoving && state.state == 3 && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
+            WashTiles();
+            state.Toggle();
+            state.Shift();
+            if (isMC) {
+                phaseManager.GetComponent<PhaseManager>().UpdateTarget(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y);
+            }
+        } else if (isMoving && state.state == 2 && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
+            WashTiles();
+            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, 0);
+            state.Shift();
         }
     }
 
     void OnMouseEnter() {
-        if (!hasMoved && !playerStatus.GetComponent<ActionStatus>().pieceSelected && phaseManager.GetComponent<PhaseManager>().playerPhase && !playerStatus.GetComponent<ActionStatus>().playerMoving) {
+        if (state.state == 1 && !hasMoved && !state.pieceSelected && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
             QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
         }
     }
 
     void OnMouseExit() {
-        if (!playerStatus.GetComponent<ActionStatus>().pieceSelected && !playerStatus.GetComponent<ActionStatus>().playerMoving) {
-            foreach (GameObject valid in attackableTiles) {
-                switch (valid.GetComponent<TileBehaviour>().status) {
-                    case 1:
-                        valid.GetComponent<MeshRenderer>().material = plains;
-                        break;
-                    case 2:
-                        valid.GetComponent<MeshRenderer>().material = water;
-                        break;
-                    case 3:
-                        valid.GetComponent<MeshRenderer>().material = wall;
-                        break;
-                }
-            }
+        if (state.state == 1 && !state.pieceSelected && !state.playerMoving) {
+            WashTiles();
         }
     }
 
@@ -116,8 +138,6 @@ public class MoveCharacter : MonoBehaviour
     }
 
     public void QueueUpdate(int i, int j, int movement) {
-        wasX = i;
-        wasY = j;
         
         validTiles = new HashSet<GameObject>(); //Stores tiles that we can move to
         traversalGraph.Clear(); //Stores amount of movement it takes to get to each valid tile

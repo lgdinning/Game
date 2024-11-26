@@ -13,19 +13,22 @@ public class TileBehaviour : MonoBehaviour
     public Material wall;
     public GameObject phaseManager;
     public bool playerMoving;
+    public MoveCharacter moveScript;
+    public ActionStatus statusScript;
+
 
     
     // Start is called before the first frame update
     void Start()
     {
-
+        statusScript = playerStatus.GetComponent<ActionStatus>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButton("Fire2") && playerStatus.GetComponent<ActionStatus>().pieceSelected) {
-            playerStatus.GetComponent<ActionStatus>().pieceSelected = !playerStatus.GetComponent<ActionStatus>().pieceSelected;
+        if (Input.GetButton("Fire2") && statusScript.pieceSelected) {
+            statusScript.pieceSelected = !statusScript.pieceSelected;
         }   
     }
 
@@ -44,8 +47,9 @@ public class TileBehaviour : MonoBehaviour
     }
 
     void OnMouseDown() {
-        if (!playerStatus.GetComponent<ActionStatus>().playerMoving && (playerStatus.GetComponent<ActionStatus>().pieceSelected) && (gameObject.transform.childCount == 0) && (playerStatus.GetComponent<ActionStatus>().validTiles.ContainsKey(gameObject.GetInstanceID()))) {
-            foreach (GameObject valid in playerStatus.GetComponent<ActionStatus>().attackableTiles) {
+        moveScript = statusScript.character.GetComponent<MoveCharacter>();
+        if (!statusScript.playerMoving && (statusScript.pieceSelected) && (gameObject.transform.childCount == 0) && (statusScript.validTiles.ContainsKey(gameObject.GetInstanceID()))) {
+            foreach (GameObject valid in statusScript.attackableTiles) {
                 switch (valid.GetComponent<TileBehaviour>().status) {
                     case 1:
                         valid.GetComponent<MeshRenderer>().material = plains;
@@ -58,8 +62,8 @@ public class TileBehaviour : MonoBehaviour
                         break;
                 }
             }
-            playerStatus.GetComponent<ActionStatus>().playerMoving = true;
-            playerStatus.GetComponent<ActionStatus>().character.GetComponent<MoveCharacter>().BeginMove(x,y);   //.transform.SetParent(gameObject.transform, false);
+            statusScript.playerMoving = true;
+            moveScript.BeginMove(x,y);   //.transform.SetParent(gameObject.transform, false);
             StartCoroutine(WaitForMove());
             
 
@@ -68,7 +72,7 @@ public class TileBehaviour : MonoBehaviour
     }
 
     IEnumerator WaitForMove() {
-        while (playerStatus.GetComponent<ActionStatus>().playerMoving) {
+        while (statusScript.playerMoving) {
             yield return null;
         }
         if (gameObject.transform.GetChild(0).GetComponent<MoveCharacter>().isMC) {
@@ -76,6 +80,8 @@ public class TileBehaviour : MonoBehaviour
             // Debug.Log(x);
             // Debug.Log(y);
         }
-        playerStatus.GetComponent<ActionStatus>().Toggle();
+        statusScript.Shift(); //Move to 3
+        moveScript.QueueUpdate(x,y,0);
+
     }
 }
