@@ -77,8 +77,6 @@ public class TileBehaviour : MonoBehaviour
         }
         if (gameObject.transform.GetChild(0).GetComponent<MoveCharacter>().isMC) {
             phaseManager.GetComponent<PhaseManager>().UpdateTarget(x, y);
-            // Debug.Log(x);
-            // Debug.Log(y);
         }
         statusScript.Shift(); //Move to 3
         moveScript.QueueUpdate(x,y,0);

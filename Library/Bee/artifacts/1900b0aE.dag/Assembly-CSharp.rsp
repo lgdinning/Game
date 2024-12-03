@@ -358,6 +358,7 @@
 "Assets/Scripts/Battle/CharacterAttack.cs"
 "Assets/Scripts/Battle/DisplayManager.cs"
 "Assets/Scripts/Battle/EnemyAttack.cs"
+"Assets/Scripts/Battle/Fight.cs"
 "Assets/Scripts/Battle/MoveCharacter.cs"
 "Assets/Scripts/Battle/MoveEnemy.cs"
 "Assets/Scripts/Battle/Path.cs"

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CharacterAttack : MonoBehaviour
 {
+    public bool usesNRG;
+
+    public int rng;
     public int hp; //Health a character has
     public int atk; //Physical damage a character deals
     public int nrg; //Energy damage a character deals
