@@ -11,6 +11,8 @@ public class PhaseManager : MonoBehaviour
     public List<GameObject> enemyPieces;
     public bool playerPhase;
 
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +27,27 @@ public class PhaseManager : MonoBehaviour
             playerPhase = false;
             SetPlayerTurn(false);
             CheckPlayerDone();
+        }
+    }
+
+    public void Clear(bool total) {
+        foreach (GameObject e in enemyPieces) {
+            if (e.GetComponent<MoveEnemy>().displaying) {
+                //e.GetComponent<MoveEnemy>().UpdateAttackables();
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, false, 1);
+            }
+            if (total) {
+                e.GetComponent<MoveEnemy>().displaying = false;
+            }
+        }
+    }
+
+    public void UnClear() {
+        foreach (GameObject e in enemyPieces) {
+            if (e.GetComponent<MoveEnemy>().displaying) {
+                e.GetComponent<MoveEnemy>().UpdateAttackables();
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, true, 1);
+            }
         }
     }
 
@@ -43,6 +66,9 @@ public class PhaseManager : MonoBehaviour
             } 
         } else {     
             foreach (GameObject p in playerPieces) {
+                if (p.GetComponent<MoveCharacter>().isMC) {
+                    UpdateTarget(p.transform.parent.GetComponent<TileBehaviour>().x, p.transform.parent.GetComponent<TileBehaviour>().y);
+                }
                 p.GetComponent<MoveCharacter>().hasMoved = true;
                 p.GetComponent<MeshRenderer>().material = p.GetComponent<MoveCharacter>().selected;
             }
@@ -69,7 +95,7 @@ public class PhaseManager : MonoBehaviour
                 //Debug.Log(e.GetComponent<MoveEnemy>().attackableTiles.Count);
                 enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, false, 1);
             }
-            e.GetComponent<MoveEnemy>().QueueUpdate(e.transform.parent.GetComponent<TileBehaviour>().x, e.transform.parent.GetComponent<TileBehaviour>().y); 
+            e.GetComponent<MoveEnemy>().DoTurn(e.transform.parent.GetComponent<TileBehaviour>().x, e.transform.parent.GetComponent<TileBehaviour>().y); 
             while (e.GetComponent<MoveEnemy>().isMoving) {
                 yield return null;
             }

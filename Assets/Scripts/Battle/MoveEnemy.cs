@@ -5,61 +5,65 @@ using UnityEngine;
 public class MoveEnemy : MonoBehaviour
 {
 
-    public List<List<GameObject>> map;
-    public HashSet<GameObject> validTiles;
-    public HashSet<GameObject> attackableTiles;
-    public List<List<int>> validPath;
-    public Dictionary<int,int> traversalGraph;
-    public int targetX;
-    public int targetY;
-    public int movementDistance;
-    public int attackRange;
-    public Material available;
+    public List<List<GameObject>> map; //A grid representing the map with all the tiles in it and pieces attached to those tiles
+    public HashSet<GameObject> validTiles; //This represents the list of tiles that the enemy can move to
+    public HashSet<GameObject> attackableTiles; //This represents the tiles that this enemy can attack
+    public HashSet<GameObject> targets; //List of allies that the enemy can attack
+    public List<List<int>> validPath; //A list of tiles that leads to the target destination
+    public Dictionary<int,int> traversalGraph; //A list to note which tiles have been visited by the BFS algorithm and how far away they are
+    public int targetX; //The x value in the grid that we want to go to
+    public int targetY; //The y value in the grid that we want to go to
+    public int movementDistance; //The distance that this unit can move
+    public int attackRange; //The range that this unit can attack from
+    public Material available; 
     public Material attackable;
     public Material plains;
     public Material water;
     public Material wall;
-    public Heap a;
-    public bool isMoving;
-    public bool displaying;
-    public GameObject enemyDisplay;
-    public GameObject actionManager;
-    public ActionStatus state;
+    public Heap a; //A heap used to pick priority tiles in the A* algorithm
+    public Heap attackHeap; //A heap used to prioritize which unit to attack and which space to attack from
+    public bool isMoving; //Checks if the current unit is in movement to lock anything else from happening until it is done
+    public bool displaying; //Checks if the current unit is displaying its move range
+    public GameObject enemyDisplay; //Grabs the script that highlights enemy ranges
+    public GameObject actionManager; //Grabs the scripts that manages the action status and movement status
+    public ActionStatus state; //ActionStatus from actionManager
  
     // Start is called before the first frame update
     void Start()
     {
         a = new Heap();
+        attackHeap = new Heap();
         traversalGraph = new Dictionary<int, int>();
         validTiles = new HashSet<GameObject>();
         attackableTiles = new HashSet<GameObject>();
+        targets = new HashSet<GameObject>();
         validPath = new List<List<int>>();
         state = actionManager.GetComponent<ActionStatus>();
     }
 
-    public void ToggleOn() {
-        BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
-    }
+    // public void ToggleOn() { 
+    //     BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+    // }
 
-    public void ToggleOff() {
+    // public void ToggleOff() {
 
-        foreach (GameObject v in attackableTiles) {
-            switch (v.GetComponent<TileBehaviour>().status) {
-                case 1:
-                    v.GetComponent<MeshRenderer>().material = plains;
-                    break;
-                case 2:
-                    v.GetComponent<MeshRenderer>().material = water;
-                    break;
-                case 3:
-                    v.GetComponent<MeshRenderer>().material = wall;
-                    break;
-            }
-        }
+    //     foreach (GameObject v in attackableTiles) {
+    //         switch (v.GetComponent<TileBehaviour>().status) {
+    //             case 1:
+    //                 v.GetComponent<MeshRenderer>().material = plains;
+    //                 break;
+    //             case 2:
+    //                 v.GetComponent<MeshRenderer>().material = water;
+    //                 break;
+    //             case 3:
+    //                 v.GetComponent<MeshRenderer>().material = wall;
+    //                 break;
+    //         }
+    //     }
         
-    }
+    // }
 
-    void OnMouseDown() {
+    void OnMouseDown() { //When in free moving state, no piece selected, this will let you toggle the range visibility
         if (state.state == 1 && !actionManager.GetComponent<ActionStatus>().playerMoving) {
             BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
             if (!isMoving) {
@@ -69,7 +73,7 @@ public class MoveEnemy : MonoBehaviour
 
     }
 
-    void OnMouseEnter() {
+    void OnMouseEnter() { //When in free moving state, no piece selected, this will toggle on the range visibility
         if (state.state == 1 && !actionManager.GetComponent<ActionStatus>().playerMoving) {
             BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
             if (!displaying) {
@@ -78,7 +82,7 @@ public class MoveEnemy : MonoBehaviour
         }
     }
 
-    void OnMouseExit() {
+    void OnMouseExit() { //When in free moving state, no piece selected, this will toggle off the range visibility
 
         if (state.state == 1 && !displaying) {
             enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(attackableTiles, false, 1);
@@ -184,9 +188,15 @@ public class MoveEnemy : MonoBehaviour
         return (Mathf.Abs(j-targetY) + Mathf.Abs(i-targetX) - move + movementDistance);
     }
 
-    public void BFS(int i, int j, int movement) {
+    public void UpdateAttackables() {
+        BFS(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+    }
+
+    public bool BFS(int i, int j, int movement) {
+        bool toReturn = false;
         attackableTiles = new HashSet<GameObject>();
         validTiles = new HashSet<GameObject>(); //Stores tiles that we can move to
+        targets.Clear();
         traversalGraph.Clear(); //Stores amount of movement it takes to get to each valid tile
         Queue<List<int>> q = new Queue<List<int>>(); //Order of traversal
         validTiles.Add(map[i][j]); //Add root node (where player piece is)
@@ -208,7 +218,10 @@ public class MoveEnemy : MonoBehaviour
             if (m > 0) { //If node not out of range
                 //Check if left node is off map or if it's a wall
                 if (x != 0) {
-
+                    if (map[x-1][y].GetComponent<TileBehaviour>().HasAlly()) {
+                        toReturn = true;
+                        targets.Add(map[x-1][y].transform.GetChild(0).gameObject);
+                    }
                     if ((map[x-1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x-1][y].GetComponent<TileBehaviour>().HasAlly())) { 
        
                     
@@ -239,7 +252,10 @@ public class MoveEnemy : MonoBehaviour
                 } 
                 //Check if bottom node is off map or if it's a wall
                 if (y != 0) {
-                    
+                    if (map[x][y-1].GetComponent<TileBehaviour>().HasAlly()) {
+                        toReturn = true;
+                        targets.Add(map[x][y-1].transform.GetChild(0).gameObject);
+                    }
                     if ((map[x][y-1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y-1].GetComponent<TileBehaviour>().HasAlly())) {
 
                         if (m > BFSDictOrDefault(traversalGraph,map[x][y-1].GetInstanceID())) {
@@ -269,6 +285,10 @@ public class MoveEnemy : MonoBehaviour
                 } 
                 //Check if right node is off map or if it's a wall
                 if (x != (map.Count-1)) {
+                    if (map[x+1][y].GetComponent<TileBehaviour>().HasAlly()) {
+                        toReturn = true;
+                        targets.Add(map[x+1][y].transform.GetChild(0).gameObject);
+                    }
                     if ((map[x+1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x+1][y].GetComponent<TileBehaviour>().HasAlly())) {
  
                         if (m > BFSDictOrDefault(traversalGraph,map[x+1][y].GetInstanceID())) {
@@ -298,6 +318,10 @@ public class MoveEnemy : MonoBehaviour
                 }
                 //Check if right node is off map or if it's a wall
                 if (y != (map[0].Count-1)) {
+                    if (map[x][y+1].GetComponent<TileBehaviour>().HasAlly()) {
+                        toReturn = true;
+                        targets.Add(map[x][y+1].transform.GetChild(0).gameObject);
+                    }
                     if ((map[x][y+1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y+1].GetComponent<TileBehaviour>().HasAlly())) {
                         
                         if (m > BFSDictOrDefault(traversalGraph,map[x][y+1].GetInstanceID())) {
@@ -328,7 +352,9 @@ public class MoveEnemy : MonoBehaviour
                     }
                 }
             } else {
-                if (m < 0) {
+                if (map[x][y].GetComponent<TileBehaviour>().HasAlly()) {
+                    toReturn = true;
+                    targets.Add(map[x][y].transform.GetChild(0).gameObject);
                     //map[x][y].GetComponent<MeshRenderer>().material = attackable;
                 }
                 if (m > -(attackRange)) {
@@ -352,6 +378,35 @@ public class MoveEnemy : MonoBehaviour
             }
         }
         attackableTiles.UnionWith(validTiles);
+        Debug.Log(targets.Count);
+        return toReturn;
+    }
+
+    public void DoTurn(int i, int j) {
+        isMoving = true;
+        BFS(i, j, movementDistance);
+        if (targets.Count <= 0) {
+            QueueUpdate(i, j);
+        } else {
+            List<GameObject> holder = new List<GameObject>();
+            HashSet<GameObject> ph = validTiles;
+            foreach (GameObject phtile in targets) {
+                holder.Add(phtile);
+            }
+            BFS(holder[0].transform.parent.GetComponent<TileBehaviour>().x, holder[0].transform.parent.GetComponent<TileBehaviour>().y, 0);
+            ph.IntersectWith(attackableTiles);
+            // foreach (GameObject phtile in attackableTiles) {
+            //     phtile.GetComponent<MeshRenderer>().material = attackable;
+            // }
+            HashSet<GameObject> ph2 = new HashSet<GameObject>();
+            foreach (GameObject phtile in ph) {
+                if (!phtile.GetComponent<TileBehaviour>().HasEnemy()) {
+                    ph2.Add(phtile);
+                } 
+            }
+            QueueUpdate(i,j);
+            //QueueUpdate(ph[0].transform.parent.GetComponent<TileBehaviour>().x, ph[0].transform.parent.GetComponent<TileBehaviour>().y);
+        }
     }
 
     public void QueueUpdate(int i, int j) {
@@ -362,7 +417,6 @@ public class MoveEnemy : MonoBehaviour
         traversalGraph[map[i][j].GetInstanceID()] = movementDistance; //Root takes 0 movement to get to
         a.Insert(calcHeur(i, j, movementDistance),i,j,movementDistance);
         //q.Enqueue(new List<int> {i, j, movement}); //Add root to queue, nodes are in form of (x value, y value, movement remaining)
-        //int tries = 0; this line was used for testing when i was getting infinite runtime errors
         List<int> curr;
         int x = -1;
         int y = -1;
@@ -374,9 +428,6 @@ public class MoveEnemy : MonoBehaviour
             x = curr[1]; 
             y = curr[2];
             m = curr[3];
-
-            //map[x][y].GetComponent<MeshRenderer>().material = available;
-
 
             //Check if left node is off map or if it's a wall
             if ((targetX == x-1 && targetY == y) || ((x != 0) && (map[x-1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x-1][y].GetComponent<TileBehaviour>().HasAlly()))) { 
@@ -480,7 +531,8 @@ public class MoveEnemy : MonoBehaviour
     IEnumerator Move() {
         int len = validPath.Count-1;
         //Debug.Log("Check");
-        for (int m = 0; m < movementDistance; m++) {    
+        int howFar = movementDistance;
+        for (int m = 0; m < howFar; m++) {    
             //string print = validPath[len-m][0] + "," + validPath[len-m][1]; 
             if (len-m >= 1) {
                 gameObject.transform.SetParent(map[validPath[len-m][0]][validPath[len-m][1]].transform, false);
@@ -489,4 +541,5 @@ public class MoveEnemy : MonoBehaviour
         }
         isMoving = false;
     }
+
 }

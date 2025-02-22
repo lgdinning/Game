@@ -24,12 +24,11 @@ public class Fight : MonoBehaviour
         int multiplier = a.spd;
         return 1f;
     }
-    public void FightSim(CharacterAttack atk, CharacterAttack def) {
+    public void FightSim(CharacterAttack atk, EnemyAttack def, bool atkTurn) {
         //var rand = new Random();
 
         int atkHits = 1;
         int defHits = 1;
-        bool atkTurn = true;
         int atkSpeed = atk.spd;
         int defSpeed = def.spd;
         int atkPower = atk.atk;

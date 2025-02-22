@@ -5,11 +5,13 @@ using UnityEngine;
 public class DisplayManager : MonoBehaviour
 {
     public List<List<GameObject>> map; //Grid of all tiles in map
+    public List<List<GameObject>> updateMap;
     public Dictionary<GameObject,int> depthChart; //Dictionary carrying the tiles that are on the map and how many enemies can reach said tile
     public Material plains; //Green for plains
     public Material water; //Blue for water
     public Material wall; //Red for wall
     public Material enemy; //Pink for enemy range
+    public Material clear;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,30 +36,34 @@ public class DisplayManager : MonoBehaviour
             add = add * -1;
         } 
         foreach (GameObject tile in set) {
+            int x = tile.GetComponent<TileBehaviour>().x;
+            int y = tile.GetComponent<TileBehaviour>().y;
             
             if (depthChart.TryGetValue(tile, out int depth)) { //If it's in the dictionary already
 
                 if (depth + add <= 0) { //If tile depth <= 0, it is no longer in enemy range and we change it back to its normal colour
                     
                     depthChart.Remove(tile);
-                    switch (tile.GetComponent<TileBehaviour>().status) {
-                        case 1:
-                            tile.GetComponent<MeshRenderer>().material = plains;
-                            break;
-                        case 2:
-                            tile.GetComponent<MeshRenderer>().material = water;
-                            break;
-                        case 3:
-                            tile.GetComponent<MeshRenderer>().material = wall;
-                            break;
-                    }
+                    updateMap[x][y].GetComponent<MeshRenderer>().material = clear;
+                    // switch (tile.GetComponent<TileBehaviour>().status) {
+                    //     case 1:
+                    //         updateMap[x][y].GetComponent<MeshRenderer>().material = plains;
+                    //         break;
+                    //     case 2:
+                    //         updateMap[x][y].GetComponent<MeshRenderer>().material = water;
+                    //         break;
+                    //     case 3:
+                    //         updateMap[x][y].GetComponent<MeshRenderer>().material = wall;
+                    //         break;
+                    // }
                 } else { //Otherwise add to depth
                     depthChart[tile] += add; 
                 }
             } else { //If not in dictionary
 
                 depthChart[tile] = add; //Add it in
-                tile.GetComponent<MeshRenderer>().material = enemy; //Visually show that it is in range
+                
+                updateMap[x][y].GetComponent<MeshRenderer>().material = enemy; //Visually show that it is in range
             }
         }
     } 

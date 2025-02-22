@@ -8,11 +8,13 @@ public class NewBehaviourScript : MonoBehaviour
     public Material plains;
     public Material water;
     public GameObject tile;
+    public GameObject updateTile;
     public GameObject piece;
     public GameObject enemy;
     public int length;
     public int width;
     public List<List<GameObject>> grid;
+    public List<List<GameObject>> updateGrid;
     public System.Random rand;
     public GameObject phaseManager;
     public GameObject enemyDisplay;
@@ -95,14 +97,16 @@ public class NewBehaviourScript : MonoBehaviour
         int kingX = -1;
         int kingY = -1;
         grid = new List<List<GameObject>>();
+        updateGrid = new List<List<GameObject>>();
         GameObject thisPiece;
         for (int x = 0; x < reference.Count; x++) {
             grid.Add(new List<GameObject>());
+            updateGrid.Add(new List<GameObject>());
             //Debug.Log(grid.Count);
             for (int y = 0; y < reference[x].Count; y++) {
                 //Debug.Log(grid[x].Count);
                 grid[x].Add(Instantiate(tile, new Vector3(x-3.5f, 0, y-3.5f), tile.transform.rotation));
-                
+                updateGrid[x].Add(Instantiate(updateTile, new Vector3(x-3.5f, 0.02f, y-3.5f), tile.transform.rotation));
                 switch (reference[x][y]) {
                     case 1:
                         grid[x][y].GetComponent<MeshRenderer>().material = plains;
@@ -165,6 +169,7 @@ public class NewBehaviourScript : MonoBehaviour
             }
         }
         enemyDisplay.GetComponent<DisplayManager>().map = grid;
+        enemyDisplay.GetComponent<DisplayManager>().updateMap = updateGrid;
         //Debug.Log(kingX + "," + kingY);
         phaseManager.GetComponent<PhaseManager>().UpdateTarget(kingX,kingY);
         // for (int x = 0; x < reference.Count; x++) {

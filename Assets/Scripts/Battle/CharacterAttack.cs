@@ -20,7 +20,16 @@ public class CharacterAttack : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        rng = 1;
+        hp = 10;
+        atk = 7;
+        nrg = 7;
+        spd = 7;
+        skl = 7;
+        fin = 7;
+        arm = 3;
+        shld = 3;
+        wgt = 5;
     }
 
     // Update is called once per frame

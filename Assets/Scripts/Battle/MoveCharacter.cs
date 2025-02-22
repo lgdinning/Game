@@ -78,6 +78,7 @@ public class MoveCharacter : MonoBehaviour
     public void Reset() {
         WashTiles();
         gameObject.transform.SetParent(map[wasX][wasY].transform, false);
+        phaseManager.GetComponent<PhaseManager>().UnClear();
         state.state = 1;
         isMoving = false;
     }
@@ -102,6 +103,7 @@ public class MoveCharacter : MonoBehaviour
             state.Toggle();
 
         } else if (isMoving && state.state == 3 && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
+            Debug.Log("Check");
             WashTiles();
             state.Toggle();
             state.Shift();

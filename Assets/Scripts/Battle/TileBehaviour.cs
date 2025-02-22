@@ -32,6 +32,10 @@ public class TileBehaviour : MonoBehaviour
         }   
     }
 
+    public bool HasUnit() {
+        return !(HasAlly() || HasEnemy());
+    }
+
     public bool HasAlly() {
         if ((!(gameObject.transform.childCount == 0)) && (gameObject.transform.GetChild(0).GetComponent<AllyOrEnemy>().ally)) {
             return true;
@@ -47,28 +51,30 @@ public class TileBehaviour : MonoBehaviour
     }
 
     void OnMouseDown() {
-        moveScript = statusScript.character.GetComponent<MoveCharacter>();
-        if (!statusScript.playerMoving && (statusScript.pieceSelected) && (gameObject.transform.childCount == 0) && (statusScript.validTiles.ContainsKey(gameObject.GetInstanceID()))) {
-            foreach (GameObject valid in statusScript.attackableTiles) {
-                switch (valid.GetComponent<TileBehaviour>().status) {
-                    case 1:
-                        valid.GetComponent<MeshRenderer>().material = plains;
-                        break;
-                    case 2:
-                        valid.GetComponent<MeshRenderer>().material = water;
-                        break;
-                    case 3:
-                        valid.GetComponent<MeshRenderer>().material = wall;
-                        break;
+
+        if (statusScript.state > 1) {
+            moveScript = statusScript.character.GetComponent<MoveCharacter>();
+            if (!statusScript.playerMoving && (statusScript.pieceSelected) && (gameObject.transform.childCount == 0) && (statusScript.validTiles.ContainsKey(gameObject.GetInstanceID()))) {
+                foreach (GameObject valid in statusScript.attackableTiles) {
+                    switch (valid.GetComponent<TileBehaviour>().status) {
+                        case 1:
+                            valid.GetComponent<MeshRenderer>().material = plains;
+                            break;
+                        case 2:
+                            valid.GetComponent<MeshRenderer>().material = water;
+                            break;
+                        case 3:
+                            valid.GetComponent<MeshRenderer>().material = wall;
+                            break;
+                    }
                 }
+                statusScript.playerMoving = true;
+                moveScript.BeginMove(x,y);   //.transform.SetParent(gameObject.transform, false);
+                StartCoroutine(WaitForMove());
+                
+
             }
-            statusScript.playerMoving = true;
-            moveScript.BeginMove(x,y);   //.transform.SetParent(gameObject.transform, false);
-            StartCoroutine(WaitForMove());
-            
-
         }
-
     }
 
     IEnumerator WaitForMove() {
