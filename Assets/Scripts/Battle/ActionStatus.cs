@@ -31,15 +31,15 @@ public class ActionStatus : MonoBehaviour
                 state = 2;
                 break;
             case 2: //Choosing place to move piece (piece clicked)
-                phaseManager.GetComponent<PhaseManager>().Clear(false);
+                phaseManager.GetComponent<PhaseManager>().ClearUnclear();
                 state = 3;
                 break;
             case 3: //Choosing action for piece (action selection)
-                phaseManager.GetComponent<PhaseManager>().UnClear();
                 state = 1;
                 break;
             case 4:
-                phaseManager.GetComponent<PhaseManager>().UnClear();
+                phaseManager.GetComponent<PhaseManager>().ClearUnclear();
+                //phaseManager.GetComponent<PhaseManager>().UnClear();
                 state = 1;
                 break;
         }

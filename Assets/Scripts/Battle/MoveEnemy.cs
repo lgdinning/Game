@@ -9,7 +9,7 @@ public class MoveEnemy : MonoBehaviour
     public HashSet<GameObject> validTiles; //This represents the list of tiles that the enemy can move to
     public HashSet<GameObject> attackableTiles; //This represents the tiles that this enemy can attack
     public HashSet<GameObject> targets; //List of allies that the enemy can attack
-    public List<List<int>> validPath; //A list of tiles that leads to the target destination
+    public Stack<List<int>> validPath; //A list of tiles that leads to the target destination
     public Dictionary<int,int> traversalGraph; //A list to note which tiles have been visited by the BFS algorithm and how far away they are
     public int targetX; //The x value in the grid that we want to go to
     public int targetY; //The y value in the grid that we want to go to
@@ -37,7 +37,7 @@ public class MoveEnemy : MonoBehaviour
         validTiles = new HashSet<GameObject>();
         attackableTiles = new HashSet<GameObject>();
         targets = new HashSet<GameObject>();
-        validPath = new List<List<int>>();
+        validPath = new Stack<List<int>>();
         state = actionManager.GetComponent<ActionStatus>();
     }
 
@@ -154,6 +154,7 @@ public class MoveEnemy : MonoBehaviour
         public void Insert(int heur, int x, int y, int m) {
             h.Add(new List<int>() {heur, x, y, m});
             Heapify(((h.Count-1)-1)/2, true);
+            Debug.Log(h);
             //Print();
         }
 
@@ -186,6 +187,10 @@ public class MoveEnemy : MonoBehaviour
 
     public int calcHeur(int i, int j, int move) {
         return (Mathf.Abs(j-targetY) + Mathf.Abs(i-targetX) - move + movementDistance);
+    }
+
+    public int TargetHeur(int i, int j, int tx, int ty, int move) {
+        return (Mathf.Abs(j-ty) + Mathf.Abs(i-tx));
     }
 
     public void UpdateAttackables() {
@@ -378,7 +383,6 @@ public class MoveEnemy : MonoBehaviour
             }
         }
         attackableTiles.UnionWith(validTiles);
-        Debug.Log(targets.Count);
         return toReturn;
     }
 
@@ -395,15 +399,27 @@ public class MoveEnemy : MonoBehaviour
             }
             BFS(holder[0].transform.parent.GetComponent<TileBehaviour>().x, holder[0].transform.parent.GetComponent<TileBehaviour>().y, 0);
             ph.IntersectWith(attackableTiles);
-            // foreach (GameObject phtile in attackableTiles) {
-            //     phtile.GetComponent<MeshRenderer>().material = attackable;
-            // }
-            HashSet<GameObject> ph2 = new HashSet<GameObject>();
+
+            //Choose tile to move towards
+            attackHeap.Clear();
             foreach (GameObject phtile in ph) {
                 if (!phtile.GetComponent<TileBehaviour>().HasEnemy()) {
-                    ph2.Add(phtile);
+                    TileBehaviour t = phtile.GetComponent<TileBehaviour>();
+                    attackHeap.Insert(TargetHeur(i, j, t.x, t.y, movementDistance), t.x, t.y, 1);
                 } 
             }
+            if (attackHeap.Len() > 0) {
+                List<int> heapPop = attackHeap.Pop();
+                targetX = heapPop[1];
+                targetY = heapPop[2];
+            }
+
+            // HashSet<GameObject> ph2 = new HashSet<GameObject>();
+            // foreach (GameObject phtile in ph) {
+            //     if (!phtile.GetComponent<TileBehaviour>().HasEnemy()) {
+            //         ph2.Add(phtile);
+            //     } 
+            // }
             QueueUpdate(i,j);
             //QueueUpdate(ph[0].transform.parent.GetComponent<TileBehaviour>().x, ph[0].transform.parent.GetComponent<TileBehaviour>().y);
         }
@@ -514,7 +530,7 @@ public class MoveEnemy : MonoBehaviour
         validPath.Clear();
         while (!(pathX == i && pathY == j) && (tries < 500)) {
             //map[pathX][pathY].GetComponent<MeshRenderer>().material = available;
-            validPath.Add(new List<int> {pathX, pathY});
+            validPath.Push(new List<int> {pathX, pathY});
             int ph = pathX;
             pathX = map[pathX][pathY].GetComponent<Path>().prevX;
             pathY = map[ph][pathY].GetComponent<Path>().prevY;
@@ -530,15 +546,33 @@ public class MoveEnemy : MonoBehaviour
 
     IEnumerator Move() {
         int len = validPath.Count-1;
-        //Debug.Log("Check");
         int howFar = movementDistance;
-        for (int m = 0; m < howFar; m++) {    
-            //string print = validPath[len-m][0] + "," + validPath[len-m][1]; 
-            if (len-m >= 1) {
-                gameObject.transform.SetParent(map[validPath[len-m][0]][validPath[len-m][1]].transform, false);
-                yield return new WaitForSeconds(0.05f);
-            }
+        if (len - howFar < 1) {
+            howFar = len;
+        } 
+        List<List<int>> wholePath = new List<List<int>>();
+        for (int m = 0; m <= howFar; m++) {
+            wholePath.Add(validPath.Pop());
         }
+ 
+        while ((wholePath.Count > 0) && map[wholePath[wholePath.Count-1][0]][wholePath[wholePath.Count-1][1]].GetComponent<TileBehaviour>().HasEnemy()) {
+            wholePath.RemoveAt(wholePath.Count-1);
+        }
+        
+        foreach (List<int> x in wholePath) {
+            gameObject.transform.SetParent(map[x[0]][x[1]].transform, false);
+            yield return new WaitForSeconds(0.05f);
+        }
+        // while (howFar > 0 && map[validPath[len-howFar][0]][validPath[len-howFar][1]].GetComponent<TileBehaviour>().HasEnemy()) {
+        //     Debug.Log(gameObject.GetInstanceID().ToString() + " " + howFar.ToString());
+        //     howFar -= 1;
+        // }
+        // for (int m = 0; m < howFar; m++) {    
+        //     if (len-m >= 1) {
+        //         gameObject.transform.SetParent(map[validPath[len-m][0]][validPath[len-m][1]].transform, false);
+        //         yield return new WaitForSeconds(0.05f);
+        //     }
+        // }
         isMoving = false;
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PhaseManager : MonoBehaviour
 {
+    public GameObject mc;
     public GameObject actionStatus;
     public ActionStatus state;
     public GameObject enemyDisplay;
@@ -30,10 +31,19 @@ public class PhaseManager : MonoBehaviour
         }
     }
 
+    public void ClearUnclear() {
+        foreach (GameObject e in enemyPieces) {
+            if (e.GetComponent<MoveEnemy>().displaying) {
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, false, 1);
+                e.GetComponent<MoveEnemy>().UpdateAttackables();
+                enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, true, 1);
+            }
+        }
+    }
+
     public void Clear(bool total) {
         foreach (GameObject e in enemyPieces) {
             if (e.GetComponent<MoveEnemy>().displaying) {
-                //e.GetComponent<MoveEnemy>().UpdateAttackables();
                 enemyDisplay.GetComponent<DisplayManager>().UpdateDisplay(e.GetComponent<MoveEnemy>().attackableTiles, false, 1);
             }
             if (total) {
@@ -82,7 +92,7 @@ public class PhaseManager : MonoBehaviour
                 return false;
             }
         }
-
+        SetPlayerTurn(false);
         StartCoroutine(EnemyTurn());
         return true;
     }
