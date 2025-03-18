@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
-public class CharacterAttack : MonoBehaviour
+public class CharacterAttack : MonoBehaviour, StatSpread
 {
     public bool usesNRG;
 
@@ -16,6 +17,18 @@ public class CharacterAttack : MonoBehaviour
     public int arm; //Resistance to physical damage
     public int shld; //Resistance to energy damage
     public int wgt; //Determines how far unit hits another one
+    public GameObject actionStatus;
+    public Canvas canvas;
+    public ActionStatus state;
+    public TMP_Text hpLabel;
+    public TMP_Text atkLabel;
+    public TMP_Text nrgLabel;
+    public TMP_Text spdLabel;
+    public TMP_Text sklLabel;
+    public TMP_Text finLabel;
+    public TMP_Text armLabel;
+    public TMP_Text shldLabel;
+    public TMP_Text wgtLabel;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +43,28 @@ public class CharacterAttack : MonoBehaviour
         arm = 3;
         shld = 3;
         wgt = 5;
+        state = actionStatus.GetComponent<ActionStatus>();
+    }
+
+    void OnMouseOver() {
+        if (state.state == 1) {
+            canvas.gameObject.SetActive(true);
+            hpLabel.text = "HP: " + hp.ToString();
+            atkLabel.text = "Atk: " + atk.ToString();
+            nrgLabel.text = "Nrg: " + nrg.ToString();
+            spdLabel.text = "Spd: " + spd.ToString();
+            sklLabel.text = "Skl: " + skl.ToString();
+            finLabel.text = "Fin: " + fin.ToString();
+            armLabel.text = "Arm: " + arm.ToString();
+            shldLabel.text = "Shld: " + shld.ToString();
+            wgtLabel.text = "Wgt: " + wgt.ToString();
+        }
+    }
+
+    void OnMouseExit() {
+        if (state.state == 1) {
+            canvas.gameObject.SetActive(false);
+        }
     }
 
     // Update is called once per frame

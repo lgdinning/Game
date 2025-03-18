@@ -21,51 +21,63 @@ public class Fight : MonoBehaviour
     //Damage = str - def OR nrg - shl
 
     public float FightHeur(CharacterAttack a, CharacterAttack b) {
-        int multiplier = a.spd;
+        //int total = 100;
+        //int multiplier = a.spd;
         return 1f;
     }
-    public void FightSim(CharacterAttack atk, EnemyAttack def, bool atkTurn) {
+    public int FightSim(CharacterAttack ally, EnemyAttack enemy, bool allyTurn, bool real) {
         //var rand = new Random();
 
-        int atkHits = 1;
-        int defHits = 1;
-        int atkSpeed = atk.spd;
-        int defSpeed = def.spd;
-        int atkPower = atk.atk;
-        int atkProtection = atk.arm;
-        int defPower = atk.atk;
-        int defProtection = atk.arm;
+        int allyHits = 1;
+        int enemyHits = 1;
+        int allySpeed = ally.spd;
+        int enemySpeed = enemy.spd;
+        int allyPower = ally.atk;
+        int allyProtection = ally.arm;
+        int enemyPower = ally.atk;
+        int enemyProtection = ally.arm;
         
-        if (atk.usesNRG) {
-            atkPower = atk.nrg;
-            defProtection = def.shld;
+        if (ally.usesNRG) {
+            allyPower = ally.nrg;
+            enemyProtection = enemy.shld;
         }
-        if (def.usesNRG) {
-            defPower = def.nrg;
-            atkProtection = atk.shld;
+        if (enemy.usesNRG) {
+            enemyPower = enemy.nrg;
+            allyProtection = ally.shld;
         }
-        if (atkSpeed > defSpeed) {
-            atkHits += (atkSpeed - defSpeed) / 5;
+        if (allySpeed > enemySpeed) {
+            allyHits += (allySpeed - enemySpeed) / 5;
         } else {
-            defHits += (atkSpeed - defSpeed) / 5;
+            enemyHits += (enemySpeed - allySpeed) / 5;
         }
-        if (atk.rng != def.rng) {
-            defHits = 0;
+        if (ally.rng != enemy.rng) {
+            enemyHits = 0;
         }
-        while (atkHits + defHits > 0 && atk.hp > 0 && def.hp > 0) {
-            if (atkTurn && (atkPower-defProtection > 0)) {
-                def.hp -= atkPower - defProtection;
-            } else if (!atkTurn && (defPower-atkProtection > 0)) {
-                atk.hp -= defPower - atkProtection;
+        int enemyHPLost = 0;
+        int allyHPLost = 0;
+        while (allyHits + enemyHits > 0 && ally.hp > allyHPLost && enemy.hp > enemyHPLost) {
+            if (allyTurn && (allyPower-enemyProtection > 0)) {
+                enemyHPLost += allyPower - enemyProtection;
+            } else if (!allyTurn && (enemyPower-allyProtection > 0)) {
+                allyHPLost += enemyPower - allyProtection;
             }
-            if (atkTurn) {
-                atkHits -= 1;
+            if (allyTurn) {
+                allyHits -= 1;
             } else {
-                defHits -= 1;
+                enemyHits -= 1;
             }
-            if ((atkTurn && defHits > 0) || (!atkTurn && atkHits > 0)) {
-                atkTurn = !atkTurn;
+            if ((allyTurn && enemyHits > 0) || (!allyTurn && allyHits > 0)) {
+                allyTurn = !allyTurn;
             }
         }
+        int final = 100;
+        if (real) {
+            ally.hp -= allyHPLost;
+            enemy.hp -= enemyHPLost;
+        } else {
+            final -= allyHPLost;
+            final -= enemyHPLost / 2;
+        }
+        return final;
     }
 }

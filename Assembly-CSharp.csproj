@@ -45,6 +45,7 @@
      <Compile Include="Assets\Scripts\Battle\CameraMove.cs" />
      <Compile Include="Assets\Scripts\Battle\TileBehaviour.cs" />
      <Compile Include="Assets\Scripts\Battle\UpdateValidMoves.cs" />
+     <Compile Include="Assets\Scripts\Battle\StatSpread.cs" />
      <Compile Include="Assets\Scripts\Battle\EnemyAttack.cs" />
      <Compile Include="Assets\Scripts\Battle\Path.cs" />
      <Compile Include="Assets\Scripts\Battle\ActionStatus.cs" />
@@ -58,6 +59,7 @@
      <Compile Include="Assets\Scripts\Station\StationStateManager.cs" />
      <Compile Include="Assets\Scripts\Battle\TileSpawn.cs" />
      <Compile Include="Assets\Scripts\Battle\PhaseManager.cs" />
+     <Compile Include="Assets\Scripts\Battle\UIHover.cs" />
      <Compile Include="Assets\Scripts\Station\DialogueManager.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />

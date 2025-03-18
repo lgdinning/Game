@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
-public class EnemyAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour, StatSpread
 {
 
     public int rng;
@@ -22,6 +23,16 @@ public class EnemyAttack : MonoBehaviour
     public ActionStatus state;
     public GameObject battleManager;
     public Fight fightManager;
+    public Canvas canvas;
+    public TMP_Text hpLabel;
+    public TMP_Text atkLabel;
+    public TMP_Text nrgLabel;
+    public TMP_Text spdLabel;
+    public TMP_Text sklLabel;
+    public TMP_Text finLabel;
+    public TMP_Text armLabel;
+    public TMP_Text shldLabel;
+    public TMP_Text wgtLabel;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +59,23 @@ public class EnemyAttack : MonoBehaviour
         
     }
 
+    void OnMouseOver() {
+        canvas.gameObject.SetActive(true);
+        hpLabel.text = "HP: " + hp.ToString();
+        atkLabel.text = "Atk: " + atk.ToString();
+        nrgLabel.text = "Nrg: " + nrg.ToString();
+        spdLabel.text = "Spd: " + spd.ToString();
+        sklLabel.text = "Skl: " + skl.ToString();
+        finLabel.text = "Fin: " + fin.ToString();
+        armLabel.text = "Arm: " + arm.ToString();
+        shldLabel.text = "Shld: " + shld.ToString();
+        wgtLabel.text = "Wgt: " + wgt.ToString();
+    }
+
+    void OnMouseExit() {
+        canvas.gameObject.SetActive(false);
+    }
+
     void OnMouseDown() { //Used when ally would be attacking this unit.
 
         //State 3 means that ally piece has been moved and is selecting an action.
@@ -57,8 +85,7 @@ public class EnemyAttack : MonoBehaviour
             fightManager = battleManager.GetComponent<Fight>();
 
             //Make a call to the BattleManager to sort out damage calculations
-            fightManager.FightSim(state.character.GetComponent<CharacterAttack>(), gameObject.GetComponent<EnemyAttack>(), true);
-
+            fightManager.FightSim(state.character.GetComponent<CharacterAttack>(), gameObject.GetComponent<EnemyAttack>(), true, true);
 
             if (hp <= 0) { //If this enemy is dead
                 phase.enemyPieces.Remove(gameObject); //Remove defeated enemy from viable pieces
