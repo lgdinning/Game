@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class CharacterAttack : MonoBehaviour
+public class CharacterAttack : MonoBehaviour, StatSpread
 {
     public bool usesNRG;
     public int movementDistance;
@@ -35,6 +35,7 @@ public class CharacterAttack : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+<<<<<<< HEAD
         // rng = 1;
         // hp = 10;
         // atk = 7;
@@ -52,6 +53,23 @@ public class CharacterAttack : MonoBehaviour
     {
         if (state.state == 1)
         {
+=======
+        rng = 1;
+        hp = 10;
+        atk = 7;
+        nrg = 7;
+        spd = 7;
+        skl = 7;
+        fin = 7;
+        arm = 3;
+        shld = 3;
+        wgt = 5;
+        state = actionStatus.GetComponent<ActionStatus>();
+    }
+
+    void OnMouseOver() {
+        if (state.state == 1) {
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
             canvas.gameObject.SetActive(true);
             hpLabel.text = "HP: " + hp.ToString();
             atkLabel.text = "Atk: " + atk.ToString();
@@ -65,10 +83,15 @@ public class CharacterAttack : MonoBehaviour
         }
     }
 
+<<<<<<< HEAD
     void OnMouseExit()
     {
         if (state.state == 1)
         {
+=======
+    void OnMouseExit() {
+        if (state.state == 1) {
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
             canvas.gameObject.SetActive(false);
         }
     }

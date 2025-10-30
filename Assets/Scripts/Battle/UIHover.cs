@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+<<<<<<< HEAD
 using TMPro;
 
 public class UIHover : MonoBehaviour
@@ -17,10 +18,19 @@ public class UIHover : MonoBehaviour
     public TMP_Text allyHitRate;
     public TMP_Text enemyHitRate;
     public List<int> combatReport;
+=======
+
+public class UIHover : MonoBehaviour
+{
+
+    public StatSpread stats;
+    public int i;
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 
     // Start is called before the first frame update
     void Start()
     {
+<<<<<<< HEAD
         pm = phaseManager.GetComponent<PhaseManager>();
         fm = fightManager.GetComponent<Fight>();
         state = actionStatus.GetComponent<ActionStatus>();
@@ -44,6 +54,17 @@ public class UIHover : MonoBehaviour
             canvas.gameObject.SetActive(false);    
         }
         
+=======
+
+    }
+    
+    void OnMouseOver() {
+
+    }
+
+    void OnMouseExit() {
+
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
     }
 
     // Update is called once per frame

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class EnemyAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour, StatSpread
 {
 
     public int id;
@@ -37,10 +37,13 @@ public class EnemyAttack : MonoBehaviour
     public TMP_Text armLabel;
     public TMP_Text shldLabel;
     public TMP_Text wgtLabel;
+<<<<<<< HEAD
 
     // void Awake() {
 
     // }
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 
     // Start is called before the first frame update
     void Start()
@@ -96,11 +99,14 @@ public class EnemyAttack : MonoBehaviour
 
             //Make a call to the BattleManager to sort out damage calculations
             fightManager.FightSim(state.character.GetComponent<CharacterAttack>(), gameObject.GetComponent<EnemyAttack>(), true, true);
+<<<<<<< HEAD
 
             // if (hp <= 0) { //If this enemy is dead
             //     phase.enemyPieces.Remove(gameObject); //Remove defeated enemy from viable pieces
             //     Destroy(gameObject); //Destroy enemy
             // }
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 
             // if (state.character.GetComponent<CharacterAttack>().hp <= 0) { //If the ally who attacked the enemy is dead 
             //     phase.playerPieces.Remove(state.character); //Remove defeated ally from viable pieces

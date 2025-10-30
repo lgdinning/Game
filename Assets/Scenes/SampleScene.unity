@@ -804,6 +804,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+<<<<<<< HEAD
 --- !u!1 &384226924
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,6 +910,8 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &400245870
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,9 +1159,12 @@ MonoBehaviour:
   enemyDisplay: {fileID: 0}
   actionManager: {fileID: 0}
   battleManager: {fileID: 0}
+<<<<<<< HEAD
   phaseHolder: {fileID: 0}
   phaseManager: {fileID: 0}
   statSpread: {fileID: 0}
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
   fightManager: {fileID: 0}
   state: {fileID: 0}
   hasMoved: 0
@@ -1343,7 +1349,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cba7bd5fbfc6a344fbeb7c40bcae6e1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   cam: {fileID: 963194227}
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
   mc: {fileID: 0}
   actionStatus: {fileID: 2114989596}
   state: {fileID: 0}
@@ -1730,6 +1739,7 @@ MonoBehaviour:
   armLabel: {fileID: 1411606059}
   shldLabel: {fileID: 71219771}
   wgtLabel: {fileID: 1246334296}
+<<<<<<< HEAD
 --- !u!114 &711224669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1754,6 +1764,8 @@ MonoBehaviour:
   allyHitRate: {fileID: 1756264475}
   enemyHitRate: {fileID: 563119546}
   combatReport: 
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &726843828
 GameObject:
   m_ObjectHideFlags: 0
@@ -1798,11 +1810,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caecffde251e64842a5b95b8e15b90eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   phaseManager: {fileID: 629754213}
   phase: {fileID: 0}
   fightManager: {fileID: 0}
   enemiesToDelete: []
   enemyList: []
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &774833030
 GameObject:
   m_ObjectHideFlags: 0
@@ -2205,6 +2220,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 911322344}
   m_CullTransparentMesh: 1
+<<<<<<< HEAD
 --- !u!1 &957481406
 GameObject:
   m_ObjectHideFlags: 0
@@ -2339,6 +2355,8 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 957481406}
   m_CullTransparentMesh: 1
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -2447,7 +2465,10 @@ MonoBehaviour:
   verticalInput: 0
   horizontalInput: 0
   scroll: 0
+<<<<<<< HEAD
   phaseManager: {fileID: 629754213}
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &969475105
 GameObject:
   m_ObjectHideFlags: 0
@@ -4168,6 +4189,22 @@ MonoBehaviour:
   armLabel: {fileID: 1504182419}
   shldLabel: {fileID: 136069361}
   wgtLabel: {fileID: 1857827132}
+<<<<<<< HEAD
+=======
+--- !u!114 &1821555452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821555438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18c57256e6644f241b6bffb8d9189587, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  i: 0
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &1857827130
 GameObject:
   m_ObjectHideFlags: 0
@@ -4412,6 +4449,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+<<<<<<< HEAD
 --- !u!1 &2035707824
 GameObject:
   m_ObjectHideFlags: 0
@@ -4546,6 +4584,8 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2035707824}
   m_CullTransparentMesh: 1
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 --- !u!1 &2114989596
 GameObject:
   m_ObjectHideFlags: 0
@@ -4990,6 +5030,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1036939284259156640, guid: d71face63b47d434db063f49df55704e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1821555445}
+    - targetCorrespondingSourceObject: {fileID: 1036939284259156640, guid: d71face63b47d434db063f49df55704e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821555452}
   m_SourcePrefab: {fileID: 100100000, guid: d71face63b47d434db063f49df55704e, type: 3}
 --- !u!1001 &7590694402883103578
 PrefabInstance:
@@ -5073,5 +5116,8 @@ SceneRoots:
   - {fileID: 1572153797}
   - {fileID: 1924113781}
   - {fileID: 400245873}
+<<<<<<< HEAD
   - {fileID: 2146296158}
   - {fileID: 384226928}
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b

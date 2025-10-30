@@ -29,9 +29,12 @@ public class MoveEnemy : MonoBehaviour
     public GameObject enemyDisplay; //Grabs the script that highlights enemy ranges
     public GameObject actionManager; //Grabs the scripts that manages the action status and movement status
     public GameObject battleManager;
+<<<<<<< HEAD
     public GameObject phaseHolder;
     public PhaseManager phaseManager;
     public EnemyAttack statSpread;
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
     public Fight fightManager;
     public ActionStatus state; //ActionStatus from actionManager
     public bool hasMoved;
@@ -50,11 +53,14 @@ public class MoveEnemy : MonoBehaviour
         validPath = new Stack<List<int>>();
         state = actionManager.GetComponent<ActionStatus>();
         fightManager = battleManager.GetComponent<Fight>();
+<<<<<<< HEAD
         statSpread = gameObject.GetComponent<EnemyAttack>();
         phaseManager = phaseHolder.GetComponent<PhaseManager>();
         hasMoved = false;
         attackRange = gameObject.GetComponent<EnemyAttack>().rng;
         coords = new List<List<int>>() { new List<int>() { -1, 0 }, new List<int>() { 1, 0 }, new List<int>() { 0, -1 }, new List<int>() { 0, 1 } };
+=======
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
     }
 
     // public void ToggleOn() { 
@@ -212,12 +218,20 @@ public class MoveEnemy : MonoBehaviour
     public class Heap
     {
         public List<List<int>> h;
+<<<<<<< HEAD
         public Dictionary<int, GameObject> listToTarget;
+=======
+        public Dictionary<List<int>,GameObject> listToTarget;
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
 
         public Heap()
         {
             h = new List<List<int>>();
+<<<<<<< HEAD
             listToTarget = new Dictionary<int, GameObject>();
+=======
+            listToTarget = new Dictionary<List<int>,GameObject>();
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
         }
 
         //current is h[i]
@@ -229,6 +243,7 @@ public class MoveEnemy : MonoBehaviour
             return h.Count;
         }
 
+<<<<<<< HEAD
         public List<int> Peek()
         {
             if (h.Count < 1)
@@ -236,6 +251,11 @@ public class MoveEnemy : MonoBehaviour
                 return new List<int>();
             }
             return h[0];
+=======
+        public void Clear() {
+            h = new List<List<int>>();
+            listToTarget.Clear();
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
         }
 
         public void Clear()
@@ -292,10 +312,30 @@ public class MoveEnemy : MonoBehaviour
             }
         }
 
+<<<<<<< HEAD
         public void Insert(int heur, int x, int y, int m)
         {
             h.Add(new List<int>() { heur, x, y, m });
             Heapify(((h.Count - 1) - 1) / 2, true);
+=======
+        public void Insert(int heur, int x, int y, int m) {
+            h.Add(new List<int>() {heur, x, y, m});
+            Heapify(((h.Count-1)-1)/2, true);
+        }
+
+        public void Insert(int heur, int x, int y, GameObject target) {
+            h.Add(new List<int>() {heur, x, y});
+            Heapify(((h.Count-1)-1)/2, true);
+            listToTarget.Add(new List<int>() {heur, x, y}, target);
+        }
+
+        public GameObject Get(List<int> key) {
+            if (listToTarget.TryGetValue(key, out GameObject retrieved)) {
+                return retrieved;
+            } else {
+                return null;
+            }
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
         }
 
         public void Insert(int heur, int x, int y, GameObject target)
@@ -534,6 +574,7 @@ public class MoveEnemy : MonoBehaviour
         currentTarget = null;
         isMoving = true;
         BFS(i, j, movementDistance);
+<<<<<<< HEAD
         if (targets.Count <= 0)
         { //Move towards MC
             if (statSpread.behaviour == "Defending")
@@ -564,6 +605,53 @@ public class MoveEnemy : MonoBehaviour
             }
 
             QueueUpdate(i, j);
+=======
+        if (targets.Count <= 0) {
+            QueueUpdate(i, j);
+        } else {
+            List<GameObject> holder = new List<GameObject>();
+            HashSet<GameObject> validTilesCopy = validTiles;
+            HashSet<GameObject> validTilesCopy2 = new HashSet<GameObject>(validTiles);
+            HashSet<List<GameObject>> ph = new HashSet<List<GameObject>>();
+            foreach (GameObject phtile in targets) {
+                holder.Add(phtile);
+            }
+            attackHeap.Clear();
+            foreach (GameObject possibleTarget in holder) {
+                BFS(possibleTarget.transform.parent.GetComponent<TileBehaviour>().x, possibleTarget.transform.parent.GetComponent<TileBehaviour>().y, 0);
+                validTilesCopy.IntersectWith(attackableTiles);
+                foreach (GameObject tileToAttack in validTilesCopy) {
+                    ph.Add(new List<GameObject>(){tileToAttack,possibleTarget});
+                    int thisX = gameObject.transform.parent.GetComponent<TileBehaviour>().x;
+                    int thisY = gameObject.transform.parent.GetComponent<TileBehaviour>().y;
+                    int otherX = tileToAttack.GetComponent<TileBehaviour>().x;
+                    int otherY = tileToAttack.GetComponent<TileBehaviour>().y;
+                    if (!tileToAttack.GetComponent<TileBehaviour>().HasEnemy() || (thisX == otherX && thisY == otherY)) {
+                        TileBehaviour t = tileToAttack.GetComponent<TileBehaviour>();
+                        attackHeap.Insert(fightManager.FightSim(possibleTarget.GetComponent<CharacterAttack>(), gameObject.GetComponent<EnemyAttack>(), false, false), t.x, t.y, possibleTarget);
+                    } 
+                }
+                validTilesCopy = new HashSet<GameObject>(validTilesCopy2);
+            }
+
+            //Choose tile to move towards
+            // attackHeap.Clear();
+            // foreach (List<GameObject> phtile in ph) {
+            //     //phtile.GetComponent<MeshRenderer>().material = attackable;
+            //     if (!phtile[0].GetComponent<TileBehaviour>().HasEnemy()) {
+            //         TileBehaviour t = phtile[0].GetComponent<TileBehaviour>();
+            //         attackHeap.Insert(TargetHeur(i, j, t.x, t.y, movementDistance), t.x, t.y, 1);
+            //     } 
+            // }
+            if (attackHeap.Len() > 0) {
+                List<int> heapPop = attackHeap.Pop();
+                targetX = heapPop[1];
+                targetY = heapPop[2];
+                currentTarget = attackHeap.Get(heapPop);
+            }
+
+            QueueUpdate(i,j);
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
             //QueueUpdate(ph[0].transform.parent.GetComponent<TileBehaviour>().x, ph[0].transform.parent.GetComponent<TileBehaviour>().y);
         }
     }
@@ -738,11 +826,25 @@ public class MoveEnemy : MonoBehaviour
             gameObject.transform.SetParent(map[x[0]][x[1]].transform, false);
             yield return new WaitForSeconds(0.05f);
         }
+<<<<<<< HEAD
 
         if (currentTarget != null)
         {
             fightManager.FightSim(currentTarget.GetComponent<CharacterAttack>(), gameObject.GetComponent<EnemyAttack>(), false, true);
         }
+=======
+        // while (howFar > 0 && map[validPath[len-howFar][0]][validPath[len-howFar][1]].GetComponent<TileBehaviour>().HasEnemy()) {
+        //     Debug.Log(gameObject.GetInstanceID().ToString() + " " + howFar.ToString());
+        //     howFar -= 1;
+        // }
+        // for (int m = 0; m < howFar; m++) {    
+        //     if (len-m >= 1) {
+        //         gameObject.transform.SetParent(map[validPath[len-m][0]][validPath[len-m][1]].transform, false);
+        //         yield return new WaitForSeconds(0.05f);
+        //     }
+        // }
+        fightManager.FightSim(currentTarget.GetComponent<CharacterAttack>(), gameObject.GetComponent<EnemyAttack>(), false, true);
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
         isMoving = false;
     }
 }

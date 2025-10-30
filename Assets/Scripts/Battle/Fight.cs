@@ -39,6 +39,7 @@ public class Fight : MonoBehaviour
         //int multiplier = a.spd;
         return 1f;
     }
+<<<<<<< HEAD
 
     public List<int> CombatReport(CharacterAttack ally, EnemyAttack enemy, bool allyTurn)
     {
@@ -119,6 +120,9 @@ public class Fight : MonoBehaviour
 
     public int FightSim(CharacterAttack ally, EnemyAttack enemy, bool allyTurn, bool real)
     {
+=======
+    public int FightSim(CharacterAttack ally, EnemyAttack enemy, bool allyTurn, bool real) {
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
         //var rand = new Random();
 
         int allyHits = 1;
@@ -127,6 +131,7 @@ public class Fight : MonoBehaviour
         int enemySpeed = enemy.spd;
         int allyPower = ally.atk;
         int allyProtection = ally.arm;
+<<<<<<< HEAD
         int enemyPower = enemy.atk;
         int enemyProtection = enemy.arm;
         int allyHitRate = 90 + ally.skl - enemy.fin - (int)(0.5 * enemy.spd);
@@ -295,6 +300,51 @@ public class Fight : MonoBehaviour
                 Destroy(ally.gameObject);
                 phase.allyTakedown = true;
             }
+=======
+        int enemyPower = ally.atk;
+        int enemyProtection = ally.arm;
+        
+        if (ally.usesNRG) {
+            allyPower = ally.nrg;
+            enemyProtection = enemy.shld;
+        }
+        if (enemy.usesNRG) {
+            enemyPower = enemy.nrg;
+            allyProtection = ally.shld;
+        }
+        if (allySpeed > enemySpeed) {
+            allyHits += (allySpeed - enemySpeed) / 5;
+        } else {
+            enemyHits += (enemySpeed - allySpeed) / 5;
+        }
+        if (ally.rng != enemy.rng) {
+            enemyHits = 0;
+        }
+        int enemyHPLost = 0;
+        int allyHPLost = 0;
+        while (allyHits + enemyHits > 0 && ally.hp > allyHPLost && enemy.hp > enemyHPLost) {
+            if (allyTurn && (allyPower-enemyProtection > 0)) {
+                enemyHPLost += allyPower - enemyProtection;
+            } else if (!allyTurn && (enemyPower-allyProtection > 0)) {
+                allyHPLost += enemyPower - allyProtection;
+            }
+            if (allyTurn) {
+                allyHits -= 1;
+            } else {
+                enemyHits -= 1;
+            }
+            if ((allyTurn && enemyHits > 0) || (!allyTurn && allyHits > 0)) {
+                allyTurn = !allyTurn;
+            }
+        }
+        int final = 100;
+        if (real) {
+            ally.hp -= allyHPLost;
+            enemy.hp -= enemyHPLost;
+        } else {
+            final -= allyHPLost;
+            final -= enemyHPLost / 2;
+>>>>>>> dc75531c671bcbc8f3069fe1d00e639d3747b37b
         }
         return final;
     }
