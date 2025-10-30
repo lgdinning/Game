@@ -33,7 +33,7 @@ public class TileBehaviour : MonoBehaviour
     }
 
     public bool HasUnit() {
-        return !(HasAlly() || HasEnemy());
+        return (HasAlly() || HasEnemy());
     }
 
     public bool HasAlly() {
@@ -71,8 +71,6 @@ public class TileBehaviour : MonoBehaviour
                 statusScript.playerMoving = true;
                 moveScript.BeginMove(x,y);   //.transform.SetParent(gameObject.transform, false);
                 StartCoroutine(WaitForMove());
-                
-
             }
         }
     }

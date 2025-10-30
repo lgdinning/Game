@@ -22,12 +22,15 @@ public class MoveCharacter : MonoBehaviour
     public bool status = true;
     public Dictionary<int,int> traversalGraph;
     public bool hasMoved;
+    public bool hasEntered;
     public bool isMoving;
     public int movementDistance;
     public int attackRange;
     public GameObject phaseManager;
     public int wasX;
     public int wasY;
+    public CharacterAttack statSpread;
+    public List<List<int>> coords;
 
 
     // Start is called before the first frame update
@@ -39,27 +42,72 @@ public class MoveCharacter : MonoBehaviour
         validTiles = new HashSet<GameObject>();
         attackableTiles = new HashSet<GameObject>();
         state = playerStatus.GetComponent<ActionStatus>();
+        statSpread = gameObject.GetComponent<CharacterAttack>();
         isMoving = false;
+        coords = new List<List<int>>() { new List<int>() { -1, 0 }, new List<int>() { 1, 0 }, new List<int>() { 0, -1 }, new List<int>() { 0, 1 } };
+    }
+
+    public List<GameObject> GetPushPath(int distance, List<int> direction)
+    {
+        int currX = gameObject.transform.parent.GetComponent<TileBehaviour>().x;
+        int currY = gameObject.transform.parent.GetComponent<TileBehaviour>().y;
+        List<GameObject> pushPath = new List<GameObject>();
+        int i = 0;
+        while (i < distance)
+        {
+            Debug.Log(0);
+            if (!(direction[0] == 1 && currX == map.Count - 1) && !(direction[0] == -1 && currX == 0) && !(direction[1] == 1 && currY == map[0].Count - 1) && !(direction[1] == -1 && currY == 0))
+            {
+                Debug.Log(1);
+                if (!(map[currX + direction[0]][currY + direction[1]].GetComponent<TileBehaviour>().status == 3) && !map[currX + direction[0]][currY + direction[1]].GetComponent<TileBehaviour>().HasUnit())
+                {
+                    Debug.Log(2);
+                    currX += direction[0];
+                    currY += direction[1];
+                    pushPath.Add(map[currX][currY]);
+                }
+            }
+            else
+            {
+                return pushPath;
+            }
+            i += 1;
+        }
+        return pushPath;
+    }
+
+    public void Pushed(List<GameObject> pushPath)
+    {
+        StartCoroutine("DoPush", pushPath);
+    }
+
+    IEnumerator DoPush(List<GameObject> a) {
+        foreach (GameObject x in a)
+        {
+            gameObject.transform.SetParent(x.transform, false);
+            yield return new WaitForSeconds(0.02f);
+        }
     }
 
     public bool isClicked;
     // Update is called once per frame
     void Update()
     {
-        if (isMoving && Input.GetKeyDown(KeyCode.Mouse1) && (state.state == 2) && !state.playerMoving) {
+        if (isMoving && Input.GetKeyDown(KeyCode.Mouse1) && (state.state == 2) && !state.playerMoving && gameObject == state.character) {
             state.pieceSelected = !state.pieceSelected;
-            //QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
 
             WashTiles();
             isClicked = false;
             state.state = 1;
-        } else if (isMoving && Input.GetKeyDown(KeyCode.Mouse1) && (state.state == 3)) {
+        } else if (gameObject == state.character && Input.GetKeyDown(KeyCode.Mouse1) && (state.state == 3)) {
             Reset();
         }
         
     }
 
     public void WashTiles() {
+        //QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, statSpread.movementDistance);
         foreach (GameObject valid in attackableTiles) {
             switch (valid.GetComponent<TileBehaviour>().status) {
                 case 1:
@@ -78,7 +126,7 @@ public class MoveCharacter : MonoBehaviour
     public void Reset() {
         WashTiles();
         gameObject.transform.SetParent(map[wasX][wasY].transform, false);
-        phaseManager.GetComponent<PhaseManager>().ClearUnclear();
+        PhaseManager.phaseManager.ClearUnclear();
         state.state = 1;
         isMoving = false;
     }
@@ -93,7 +141,7 @@ public class MoveCharacter : MonoBehaviour
             isMoving = true;
             wasX = gameObject.transform.parent.GetComponent<TileBehaviour>().x;
             wasY = gameObject.transform.parent.GetComponent<TileBehaviour>().y;
-            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, statSpread.movementDistance);
             
             state.character = gameObject;
             state.validTiles = traversalGraph;
@@ -102,14 +150,14 @@ public class MoveCharacter : MonoBehaviour
             state.Shift();
             state.Toggle();
 
-        } else if (isMoving && state.state == 3 && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
+        } else if (isMoving && state.state == 3 && PhaseManager.phaseManager.playerPhase && !state.playerMoving) {
             WashTiles();
             state.Toggle();
             state.Shift();
             if (isMC) {
-                phaseManager.GetComponent<PhaseManager>().UpdateTarget(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y);
+                PhaseManager.phaseManager.UpdateTarget(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y);
             }
-        } else if (isMoving && state.state == 2 && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
+        } else if (isMoving && state.state == 2 && PhaseManager.phaseManager.playerPhase && !state.playerMoving) {
             WashTiles();
             QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, 0);
             state.Shift();
@@ -117,8 +165,8 @@ public class MoveCharacter : MonoBehaviour
     }
 
     void OnMouseEnter() {
-        if (state.state == 1 && !hasMoved && !state.pieceSelected && phaseManager.GetComponent<PhaseManager>().playerPhase && !state.playerMoving) {
-            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, movementDistance);
+        if (state.state == 1 && !hasMoved && !state.pieceSelected && PhaseManager.phaseManager.playerPhase && !state.playerMoving) {
+            QueueUpdate(gameObject.transform.parent.GetComponent<TileBehaviour>().x, gameObject.transform.parent.GetComponent<TileBehaviour>().y, statSpread.movementDistance);
         }
     }
 
@@ -139,7 +187,7 @@ public class MoveCharacter : MonoBehaviour
     }
 
     public void QueueUpdate(int i, int j, int movement) {
-        
+        attackableTiles.Clear();
         validTiles = new HashSet<GameObject>(); //Stores tiles that we can move to
         traversalGraph.Clear(); //Stores amount of movement it takes to get to each valid tile
         Queue<List<int>> q = new Queue<List<int>>(); //Order of traversal
@@ -159,144 +207,217 @@ public class MoveCharacter : MonoBehaviour
             int m = curr[2];
 
             //Show current node as readable
-            map[x][y].GetComponent<MeshRenderer>().material = available;
-            if (m > 0) { //If node not out of range
-                //Check if left node is off map or if it's a wall
-                if (x != 0) {
+            if (!(statSpread.rng == 2 && m == -1 && movement == 0))
+            {
+                map[x][y].GetComponent<MeshRenderer>().material = available;
+            }
+            
+            if (m > 0)
+            { //If node not out of range
+              //Check if left node is off map or if it's a wall
+                if (x != 0)
+                {
 
-                    if ((map[x-1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x-1][y].GetComponent<TileBehaviour>().HasEnemy())) { 
-                    
-                        if (m > DictOrDefault(traversalGraph,map[x-1][y].GetInstanceID())) {  //Check if node has been visited or if it has already been checked in a shorter amount of movement
-                            if (map[x-1][y].GetComponent<TileBehaviour>().status == 2) { //if water
-                                if (m > 1) { //check if movement is sufficient for water
-                                    map[x-1][y].GetComponent<Path>().prevX = x;
-                                    map[x-1][y].GetComponent<Path>().prevY = y;
-                                    validTiles.Add(map[x-1][y]); //Add to visitable tiles
-                                    traversalGraph[map[x-1][y].GetInstanceID()] = m-2; //
-                                    q.Enqueue(new List<int> {x-1, y, m-2});
-                                } else {
-                                    attackableTiles.Add(map[x-1][y]);
-                                    q.Enqueue(new List<int> {x-1, y, -1});
+                    if ((map[x - 1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x - 1][y].GetComponent<TileBehaviour>().HasEnemy()))
+                    {
+
+                        if (m > DictOrDefault(traversalGraph, map[x - 1][y].GetInstanceID()))
+                        {  //Check if node has been visited or if it has already been checked in a shorter amount of movement
+                            if (map[x - 1][y].GetComponent<TileBehaviour>().status == 2)
+                            { //if water
+                                if (m > 1)
+                                { //check if movement is sufficient for water
+                                    map[x - 1][y].GetComponent<Path>().prevX = x;
+                                    map[x - 1][y].GetComponent<Path>().prevY = y;
+                                    validTiles.Add(map[x - 1][y]); //Add to visitable tiles
+                                    traversalGraph[map[x - 1][y].GetInstanceID()] = m - 2; //
+                                    q.Enqueue(new List<int> { x - 1, y, m - 2 });
                                 }
-                            } else { //if plains
-                                map[x-1][y].GetComponent<Path>().prevX = x;
-                                map[x-1][y].GetComponent<Path>().prevY = y;
-                                validTiles.Add(map[x-1][y]);
-                                traversalGraph[map[x-1][y].GetInstanceID()] = m-1;
-                                q.Enqueue(new List<int> {x-1, y, m-1});
+                                else
+                                {
+                                    attackableTiles.Add(map[x - 1][y]);
+                                    q.Enqueue(new List<int> { x - 1, y, -1 });
+                                }
+                            }
+                            else
+                            { //if plains
+                                map[x - 1][y].GetComponent<Path>().prevX = x;
+                                map[x - 1][y].GetComponent<Path>().prevY = y;
+                                validTiles.Add(map[x - 1][y]);
+                                traversalGraph[map[x - 1][y].GetInstanceID()] = m - 1;
+                                q.Enqueue(new List<int> { x - 1, y, m - 1 });
                             }
                         }
-                    } else {
-                        attackableTiles.Add(map[x-1][y]);
-                        q.Enqueue(new List<int> {x-1, y, -1});
                     }
-                } 
+                    else
+                    {
+                        attackableTiles.Add(map[x - 1][y]);
+                        q.Enqueue(new List<int> { x - 1, y, -1 });
+                    }
+                }
                 //Check if bottom node is off map or if it's a wall
-                if (y != 0) {
-                    
-                    if ((map[x][y-1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y-1].GetComponent<TileBehaviour>().HasEnemy())) {
-                        if (m > DictOrDefault(traversalGraph,map[x][y-1].GetInstanceID())) {
-                            if (map[x][y-1].GetComponent<TileBehaviour>().status == 2) {
-                                if (m > 1) {
-                                    map[x][y-1].GetComponent<Path>().prevX = x;
-                                    map[x][y-1].GetComponent<Path>().prevY = y;
-                                    validTiles.Add(map[x][y-1]);
-                                    traversalGraph[map[x][y-1].GetInstanceID()] = m-2;
-                                    q.Enqueue(new List<int> {x, y-1, m-2});
-                                } else {
-                                    attackableTiles.Add(map[x][y-1]);
-                                    q.Enqueue(new List<int> {x, y-1, -1});
+                if (y != 0)
+                {
+
+                    if ((map[x][y - 1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y - 1].GetComponent<TileBehaviour>().HasEnemy()))
+                    {
+                        if (m > DictOrDefault(traversalGraph, map[x][y - 1].GetInstanceID()))
+                        {
+                            if (map[x][y - 1].GetComponent<TileBehaviour>().status == 2)
+                            {
+                                if (m > 1)
+                                {
+                                    map[x][y - 1].GetComponent<Path>().prevX = x;
+                                    map[x][y - 1].GetComponent<Path>().prevY = y;
+                                    validTiles.Add(map[x][y - 1]);
+                                    traversalGraph[map[x][y - 1].GetInstanceID()] = m - 2;
+                                    q.Enqueue(new List<int> { x, y - 1, m - 2 });
                                 }
-                            } else {
-                                map[x][y-1].GetComponent<Path>().prevX = x;
-                                map[x][y-1].GetComponent<Path>().prevY = y;
-                                validTiles.Add(map[x][y-1]);
-                                traversalGraph[map[x][y-1].GetInstanceID()] = m-1;
-                                q.Enqueue(new List<int> {x, y-1, m-1});
+                                else
+                                {
+                                    attackableTiles.Add(map[x][y - 1]);
+                                    q.Enqueue(new List<int> { x, y - 1, -1 });
+                                }
+                            }
+                            else
+                            {
+                                map[x][y - 1].GetComponent<Path>().prevX = x;
+                                map[x][y - 1].GetComponent<Path>().prevY = y;
+                                validTiles.Add(map[x][y - 1]);
+                                traversalGraph[map[x][y - 1].GetInstanceID()] = m - 1;
+                                q.Enqueue(new List<int> { x, y - 1, m - 1 });
                             }
                         }
-                    } else {
-                        attackableTiles.Add(map[x][y-1]);
-                        q.Enqueue(new List<int> {x, y-1, -1});
                     }
-                } 
-                //Check if right node is off map or if it's a wall
-                if (x != (map.Count-1)) {
-                    if ((map[x+1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x+1][y].GetComponent<TileBehaviour>().HasEnemy())) {
-                        if (m > DictOrDefault(traversalGraph,map[x+1][y].GetInstanceID())) {
-                            if (map[x+1][y].GetComponent<TileBehaviour>().status == 2) {
-                                if (m > 1) {
-                                    map[x+1][y].GetComponent<Path>().prevX = x;
-                                    map[x+1][y].GetComponent<Path>().prevY = y;
-                                    validTiles.Add(map[x+1][y]);
-                                    traversalGraph[map[x+1][y].GetInstanceID()] = m-2;
-                                    q.Enqueue(new List<int> {x+1, y, m-2});
-                                } else {
-                                    attackableTiles.Add(map[x+1][y]);
-                                    q.Enqueue(new List<int> {x+1, y, -1});
-                                }
-                            } else {
-                                map[x+1][y].GetComponent<Path>().prevX = x;
-                                map[x+1][y].GetComponent<Path>().prevY = y;
-                                validTiles.Add(map[x+1][y]);
-                                traversalGraph[map[x+1][y].GetInstanceID()] = m-1;
-                                q.Enqueue(new List<int> {x+1, y, m-1});
-                            }
-                        }
-                    } else {
-                        attackableTiles.Add(map[x+1][y]);
-                        q.Enqueue(new List<int> {x+1, y, -1});
+                    else
+                    {
+                        attackableTiles.Add(map[x][y - 1]);
+                        q.Enqueue(new List<int> { x, y - 1, -1 });
                     }
                 }
                 //Check if right node is off map or if it's a wall
-                if (y != (map[0].Count-1)) {
-                    if ((map[x][y+1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y+1].GetComponent<TileBehaviour>().HasEnemy())) {
-                        if (m > DictOrDefault(traversalGraph,map[x][y+1].GetInstanceID())) {
-                            if (map[x][y+1].GetComponent<TileBehaviour>().status == 2) {
-                                if (m > 1) {
-                                    map[x][y+1].GetComponent<Path>().prevX = x;
-                                    map[x][y+1].GetComponent<Path>().prevY = y;
-                                    validTiles.Add(map[x][y+1]);
-                                    traversalGraph[map[x][y+1].GetInstanceID()] = m-2;
-                                    q.Enqueue(new List<int> {x, y+1, m-2});
-                                } else {
+                if (x != (map.Count - 1))
+                {
+                    if ((map[x + 1][y].GetComponent<TileBehaviour>().status != 3) && (!map[x + 1][y].GetComponent<TileBehaviour>().HasEnemy()))
+                    {
+                        if (m > DictOrDefault(traversalGraph, map[x + 1][y].GetInstanceID()))
+                        {
+                            if (map[x + 1][y].GetComponent<TileBehaviour>().status == 2)
+                            {
+                                if (m > 1)
+                                {
+                                    map[x + 1][y].GetComponent<Path>().prevX = x;
+                                    map[x + 1][y].GetComponent<Path>().prevY = y;
+                                    validTiles.Add(map[x + 1][y]);
+                                    traversalGraph[map[x + 1][y].GetInstanceID()] = m - 2;
+                                    q.Enqueue(new List<int> { x + 1, y, m - 2 });
+                                }
+                                else
+                                {
+                                    attackableTiles.Add(map[x + 1][y]);
+                                    q.Enqueue(new List<int> { x + 1, y, -1 });
+                                }
+                            }
+                            else
+                            {
+                                map[x + 1][y].GetComponent<Path>().prevX = x;
+                                map[x + 1][y].GetComponent<Path>().prevY = y;
+                                validTiles.Add(map[x + 1][y]);
+                                traversalGraph[map[x + 1][y].GetInstanceID()] = m - 1;
+                                q.Enqueue(new List<int> { x + 1, y, m - 1 });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        attackableTiles.Add(map[x + 1][y]);
+                        q.Enqueue(new List<int> { x + 1, y, -1 });
+                    }
+                }
+                //Check if right node is off map or if it's a wall
+                if (y != (map[0].Count - 1))
+                {
+                    if ((map[x][y + 1].GetComponent<TileBehaviour>().status != 3) && (!map[x][y + 1].GetComponent<TileBehaviour>().HasEnemy()))
+                    {
+                        if (m > DictOrDefault(traversalGraph, map[x][y + 1].GetInstanceID()))
+                        {
+                            if (map[x][y + 1].GetComponent<TileBehaviour>().status == 2)
+                            {
+                                if (m > 1)
+                                {
+                                    map[x][y + 1].GetComponent<Path>().prevX = x;
+                                    map[x][y + 1].GetComponent<Path>().prevY = y;
+                                    validTiles.Add(map[x][y + 1]);
+                                    traversalGraph[map[x][y + 1].GetInstanceID()] = m - 2;
+                                    q.Enqueue(new List<int> { x, y + 1, m - 2 });
+                                }
+                                else
+                                {
                                     //map[x][y+1].GetComponent<MeshRenderer>().material = attackable;
-                                    attackableTiles.Add(map[x][y+1]);
-                                    q.Enqueue(new List<int> {x, y+1, -1});
+                                    attackableTiles.Add(map[x][y + 1]);
+                                    q.Enqueue(new List<int> { x, y + 1, -1 });
                                 }
-                            } else {
-                                map[x][y+1].GetComponent<Path>().prevX = x;
-                                map[x][y+1].GetComponent<Path>().prevY = y;
-                                validTiles.Add(map[x][y+1]);
-                                traversalGraph[map[x][y+1].GetInstanceID()] = m-1;
-                                q.Enqueue(new List<int> {x, y+1, m-1});
+                            }
+                            else
+                            {
+                                map[x][y + 1].GetComponent<Path>().prevX = x;
+                                map[x][y + 1].GetComponent<Path>().prevY = y;
+                                validTiles.Add(map[x][y + 1]);
+                                traversalGraph[map[x][y + 1].GetInstanceID()] = m - 1;
+                                q.Enqueue(new List<int> { x, y + 1, m - 1 });
                             }
                         }
-                    } else {
-                        attackableTiles.Add(map[x][y+1]);
-                        q.Enqueue(new List<int> {x, y+1, -1});
+                    }
+                    else
+                    {
+                        attackableTiles.Add(map[x][y + 1]);
+                        q.Enqueue(new List<int> { x, y + 1, -1 });
                     }
                 }
-            } else {
-                if (m < 0) {
-                    map[x][y].GetComponent<MeshRenderer>().material = attackable;
+            }
+            else
+            {
+                if (m < 0)
+                {
+                    if (!(statSpread.rng == 2 && m == -1 && movement == 0))
+                    {
+                        map[x][y].GetComponent<MeshRenderer>().material = attackable;
+                    }
                 }
-                if (m > -(attackRange)) {
-                    if (x > 0 && !(validTiles.Contains(map[x-1][y]))) {
-                        attackableTiles.Add(map[x-1][y]);
-                        q.Enqueue(new List<int> {x-1, y, m-1});
+                if (m > -(statSpread.rng))
+                {
+
+                    if (x > 0 && !(validTiles.Contains(map[x - 1][y])))
+                    {
+                        if (!(statSpread.rng == 2 && m == 0 && movement == 0))
+                        {
+                            attackableTiles.Add(map[x - 1][y]);
+                        }
+                        q.Enqueue(new List<int> { x - 1, y, m - 1 });
                     }
-                    if (y > 0 && !(validTiles.Contains(map[x][y-1]))) {
-                        attackableTiles.Add(map[x][y-1]);
-                        q.Enqueue(new List<int> {x, y-1, m-1});
+                    if (y > 0 && !(validTiles.Contains(map[x][y - 1])))
+                    {
+                        if (!(statSpread.rng == 2 && m == 0 && movement == 0))
+                        {
+                            attackableTiles.Add(map[x][y - 1]);
+                        }
+                        q.Enqueue(new List<int> { x, y - 1, m - 1 });
                     }
-                    if ((x != map.Count-1) && !(validTiles.Contains(map[x+1][y]))) {
-                        attackableTiles.Add(map[x+1][y]);
-                        q.Enqueue(new List<int> {x+1, y, m-1});
+                    if ((x != map.Count - 1) && !(validTiles.Contains(map[x + 1][y])))
+                    {
+                        if (!(statSpread.rng == 2 && m == 0 && movement == 0))
+                        {
+                            attackableTiles.Add(map[x + 1][y]);
+                        }
+                        q.Enqueue(new List<int> { x + 1, y, m - 1 });
                     }
-                    if ((y != map[0].Count-1) && !(validTiles.Contains(map[x][y+1]))) {
-                        attackableTiles.Add(map[x][y+1]);
-                        q.Enqueue(new List<int> {x, y+1, m-1});
+                    if ((y != map[0].Count - 1) && !(validTiles.Contains(map[x][y + 1])))
+                    {
+                        if (!(statSpread.rng == 2 && m == 0 && movement == 0))
+                        {
+                            attackableTiles.Add(map[x][y + 1]);
+                        }
+                        q.Enqueue(new List<int> { x, y + 1, m - 1 });
                     }
                 }
             }

@@ -19,9 +19,19 @@ public class NewBehaviourScript : MonoBehaviour
     public GameObject phaseManager;
     public GameObject enemyDisplay;
     private int randNum;
+
+    public int currentID;
+    public AllAllies allyData;
+
+    void Awake()
+    {
+        LoadStats(); 
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        currentID = 0;
         rand = new System.Random();
         grid = new List<List<GameObject>>();
         Spawn(test1);
@@ -52,7 +62,12 @@ public class NewBehaviourScript : MonoBehaviour
     }
 
     public List<List<int>> test1 = new List<List<int>> {
-        new List<int>{13,13,13,1,1,2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,13,13,13,1},
+        // new List<int>{1,3,13,1,1},
+        // new List<int>{1,3,1,1,1},
+        // new List<int>{20,1,1,1,1},
+        // new List<int>{1,3,1,1,1},
+        // new List<int>{1,3,13,1,1}
+        new List<int>{1,1,1,13,13,2,3,1,1,1,1,1,1,1,13,1,1,1,1,1,1,1,13,1},
         new List<int>{1,2,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         new List<int>{1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         new List<int>{1,1,3,3,3,3,3,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -93,21 +108,54 @@ public class NewBehaviourScript : MonoBehaviour
     // new List<int>{1,1,3,3,13,13,3,1,1,1,3,3,3,1,1,1,13,1,1,1,1,1,13,3},
     };
 
-    public void Spawn(List<List<int>> reference) {
+    public void LoadStats()
+    {
+        string filePath = Application.persistentDataPath + "/CharacterStats.json";
+        string allAllyData = System.IO.File.ReadAllText(filePath);
+
+        allyData = JsonUtility.FromJson<AllAllies>(allAllyData);
+        Debug.Log("Data Loaded!");
+    }
+
+    public void GrabStats(GameObject character, int characterID)
+    {
+        AllyStats statSpread = allyData.allAllies[characterID];
+        CharacterAttack characterStats = character.GetComponent<CharacterAttack>();
+
+        characterStats.movementDistance = statSpread.movementDistance;
+        characterStats.usesNRG = statSpread.usesNRG;
+        characterStats.rng = statSpread.rng;
+        characterStats.hp = statSpread.hp;
+        characterStats.atk = statSpread.atk;
+        characterStats.nrg = statSpread.nrg;
+        characterStats.spd = statSpread.spd;
+        characterStats.skl = statSpread.skl;
+        characterStats.fin = statSpread.fin;
+        characterStats.arm = statSpread.arm;
+        characterStats.shld = statSpread.shld;
+        characterStats.wgt = statSpread.wgt;
+
+    }
+
+    public void Spawn(List<List<int>> reference)
+    {
         int kingX = -1;
         int kingY = -1;
         grid = new List<List<GameObject>>();
         updateGrid = new List<List<GameObject>>();
         GameObject thisPiece;
-        for (int x = 0; x < reference.Count; x++) {
+        for (int x = 0; x < reference.Count; x++)
+        {
             grid.Add(new List<GameObject>());
             updateGrid.Add(new List<GameObject>());
             //Debug.Log(grid.Count);
-            for (int y = 0; y < reference[x].Count; y++) {
+            for (int y = 0; y < reference[x].Count; y++)
+            {
                 //Debug.Log(grid[x].Count);
-                grid[x].Add(Instantiate(tile, new Vector3(x-3.5f, 0, y-3.5f), tile.transform.rotation));
-                updateGrid[x].Add(Instantiate(updateTile, new Vector3(x-3.5f, 0.02f, y-3.5f), tile.transform.rotation));
-                switch (reference[x][y]) {
+                grid[x].Add(Instantiate(tile, new Vector3(x - 3.5f, 0, y - 3.5f), tile.transform.rotation));
+                updateGrid[x].Add(Instantiate(updateTile, new Vector3(x - 3.5f, 0.02f, y - 3.5f), tile.transform.rotation));
+                switch (reference[x][y])
+                {
                     case 1:
                         grid[x][y].GetComponent<MeshRenderer>().material = plains;
                         grid[x][y].GetComponent<TileBehaviour>().status = 1;
@@ -121,7 +169,7 @@ public class NewBehaviourScript : MonoBehaviour
                         grid[x][y].GetComponent<TileBehaviour>().status = 3;
                         break;
                     case 11:
-                        thisPiece = Instantiate(piece, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
+                        thisPiece = Instantiate(piece, new Vector3(x - 3.5f, 0.2f, y - 3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
                         thisPiece.GetComponent<MoveCharacter>().wasX = x;
@@ -129,9 +177,11 @@ public class NewBehaviourScript : MonoBehaviour
                         phaseManager.GetComponent<PhaseManager>().playerPieces.Add(thisPiece);
                         grid[x][y].GetComponent<MeshRenderer>().material = plains;
                         grid[x][y].GetComponent<TileBehaviour>().status = 1;
+                        GrabStats(thisPiece, currentID);
+                        currentID += 1;
                         break;
                     case 12:
-                        thisPiece = Instantiate(piece, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
+                        thisPiece = Instantiate(piece, new Vector3(x - 3.5f, 0.2f, y - 3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
                         thisPiece.GetComponent<MoveCharacter>().wasX = x;
@@ -139,9 +189,11 @@ public class NewBehaviourScript : MonoBehaviour
                         phaseManager.GetComponent<PhaseManager>().playerPieces.Add(thisPiece);
                         grid[x][y].GetComponent<MeshRenderer>().material = water;
                         grid[x][y].GetComponent<TileBehaviour>().status = 2;
+                        GrabStats(thisPiece, currentID);
+                        currentID += 1;
                         break;
                     case 13:
-                        thisPiece = Instantiate(enemy, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
+                        thisPiece = Instantiate(enemy, new Vector3(x - 3.5f, 0.2f, y - 3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveEnemy>().map = grid;
                         phaseManager.GetComponent<PhaseManager>().enemyPieces.Add(thisPiece);
@@ -151,7 +203,7 @@ public class NewBehaviourScript : MonoBehaviour
                     case 20:
                         kingX = x;
                         kingY = y;
-                        thisPiece = Instantiate(piece, new Vector3(x-3.5f, 0.2f, y-3.5f), piece.transform.rotation);
+                        thisPiece = Instantiate(piece, new Vector3(x - 3.5f, 0.2f, y - 3.5f), piece.transform.rotation);
                         thisPiece.transform.SetParent(grid[x][y].transform);
                         thisPiece.GetComponent<MoveCharacter>().map = grid;
                         thisPiece.GetComponent<MoveCharacter>().SetMC();
@@ -160,6 +212,9 @@ public class NewBehaviourScript : MonoBehaviour
                         phaseManager.GetComponent<PhaseManager>().playerPieces.Add(thisPiece);
                         grid[x][y].GetComponent<MeshRenderer>().material = plains;
                         grid[x][y].GetComponent<TileBehaviour>().status = 1;
+                        GrabStats(thisPiece, currentID);
+                        currentID += 1;
+                        phaseManager.GetComponent<PhaseManager>().mc = thisPiece;
                         break;
                     default:
                         break;
@@ -171,17 +226,18 @@ public class NewBehaviourScript : MonoBehaviour
         enemyDisplay.GetComponent<DisplayManager>().map = grid;
         enemyDisplay.GetComponent<DisplayManager>().updateMap = updateGrid;
         //Debug.Log(kingX + "," + kingY);
-        phaseManager.GetComponent<PhaseManager>().UpdateTarget(kingX,kingY);
+        phaseManager.GetComponent<PhaseManager>().UpdateTarget(kingX, kingY);
         // for (int x = 0; x < reference.Count; x++) {
 
         //     Debug.Log(grid[x].Count);
-        
+
         // }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
+

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DisplayManager : MonoBehaviour
 {
+    public static DisplayManager displayManager;
+
     public List<List<GameObject>> map; //Grid of all tiles in map
     public List<List<GameObject>> updateMap;
     public Dictionary<GameObject,int> depthChart; //Dictionary carrying the tiles that are on the map and how many enemies can reach said tile
@@ -12,6 +14,11 @@ public class DisplayManager : MonoBehaviour
     public Material wall; //Red for wall
     public Material enemy; //Pink for enemy range
     public Material clear;
+
+    void Awake() {
+        displayManager = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {

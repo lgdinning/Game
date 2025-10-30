@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ActionStatus : MonoBehaviour
 {
+    public static ActionStatus actionStatus;
+
     public Material shade; //Colour of a piece when it has moved
     public bool pieceSelected = false; //MoveCharacter and TileBehaviour check this so they know if a piece has been clicked on to move it yet
     public GameObject character; //The piece that has been clicked
@@ -13,6 +15,11 @@ public class ActionStatus : MonoBehaviour
     public GameObject phaseManager; //The object that manages phases
     public bool playerMoving; //Checks if a piece is currently in motion
     public int state;
+
+    void Awake() {
+        actionStatus = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
